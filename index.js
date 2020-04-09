@@ -1,5 +1,3 @@
-const Version = '1.0.10';
-
 const isString       = (x) => typeof x == 'string' || x instanceof String;
 const isNumber       = (x) => (typeof x == 'number' || x instanceof Number) && !isNaN(x);
 const isDate         = (x) => x instanceof Date && !isNaN(x.valueOf());
@@ -10,7 +8,7 @@ const isSomeString   = (x) => isString(x) && x.trim() != '';
 const isObject       = (x) => typeof x == 'object' && !isString(x) && !isNumber(x) && x != null;
 const isSomeObject   = (x) => isObject(x) && Object.keys(x).length > 0;
 const isFunction     = (x) => typeof x == 'function' && typeof x.nodeType !== 'number';
-const isNumeric      = (x) => (isSomeString(x) || isNumber(x)) && !isNaN(x - parseFloat(x));	// borowwed from jQuery
+const isNumeric      = (x) => (isSomeString(x) || isNumber(x)) && !isNaN(x - parseFloat(x));	// borrowed from jQuery
 const hasDate        = (x) => (isDate(x) || isString(x) || isNumber(x)) && !isNaN(Date.parse(x));
 const hasBool		 = (x) => isBool(x) || (isSomeString(x) && ['true', 'false'].indexOf(x.toLowerCase()) >= 0);
 const isFormatedDate = (x) => isSomeString(x) && (
@@ -22,7 +20,7 @@ const isFormatedDate = (x) => isSomeString(x) && (
 const isPrimitive    = (x) => isString(x) || isNumber(x) || isDate(x) || isBool(x);
 const isArray		 = Array.isArray;
 const isSomeArray	 = (x) => isArray(x) && x.length > 0;
-const isNamespace	 = (n) => /^[a-zA-Z][a-zA-Z0-9]*(\.[a-zA-Z][a-zA-Z0-9]*)*$/.test(n);
+const isNamespace	 = (x) => isSomeString(x) && /^[a-zA-Z]\w*(\.[a-zA-Z]\w*)*$/.test(x);
 
 class BaseEnum {
     constructor(values, name) {
@@ -163,7 +161,6 @@ const Enum = {
 const NotImplementedException = x => `${x} is not implemented`;
 
 export {
-    Version,
     NotImplementedException,
 	isString,
 	isNumber,
