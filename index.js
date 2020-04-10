@@ -21,6 +21,37 @@ const isPrimitive    = (x) => isString(x) || isNumber(x) || isDate(x) || isBool(
 const isArray		 = Array.isArray;
 const isSomeArray	 = (x) => isArray(x) && x.length > 0;
 const isNamespace	 = (x) => isSomeString(x) && /^[a-zA-Z]\w*(\.[a-zA-Z]\w*)*$/.test(x);
+const forEach		 = (x, callback) => {
+	let result;
+	
+	if (!isFunction(callback)) {
+		throw `expected function for callback.`
+	}
+	
+	if (!isEmpty(x)) {
+		const _keys = Object.keys(x);
+
+		for (let i = 0; i < _keys.length; i++) {
+			const args = {
+				source: x,
+				index: i,
+				key: _keys[i],
+				value: x[_keys[i]],
+				count: _keys.length
+			};
+			
+			const r = callback(args);
+
+			if (args.break) {
+				result = r || args.result;
+
+				break;
+			}
+		}
+	}
+	
+	return result;
+}
 
 class BaseEnum {
     constructor(values, name) {
@@ -180,6 +211,7 @@ export {
 	isArray,
 	isSomeArray,
 	isNamespace,
+	forEach,
     BaseEnum,
     Enum
 }
