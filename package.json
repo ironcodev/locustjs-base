@@ -1,8 +1,9 @@
 {
   "name": "locustjs-base",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "This library contains basic functions",
-  "main": "index.js",
+  "main": "index.cjs.js",
+  "module": "index.esm.js",
   "scripts": {
     "test": "babel-node test-run.js"
   },
