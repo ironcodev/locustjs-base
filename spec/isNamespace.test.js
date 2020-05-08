@@ -1,4 +1,4 @@
-import * as locust from '../index.js'
+import * as locust from '../index.esm.js'
 
 // -------------- isNamespace -----------------
 describe('locustjs-base test suite: testing isNamespace', function() {

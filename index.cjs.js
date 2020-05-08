@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.Enum = exports.BaseEnum = exports.forEach = exports.isNamespace = exports.isSomeArray = exports.isArray = exports.isPrimitive = exports.isFormatedDate = exports.hasBool = exports.hasDate = exports.isNumeric = exports.isFunction = exports.isSomeObject = exports.isObject = exports.isSomeString = exports.isEmpty = exports.isDate = exports.isaN = exports.isBool = exports.isNumber = exports.isString = exports.NotImplementedException = void 0;
+exports.Enum = exports.BaseEnum = exports.forEach = exports.isSubClassOf = exports.isNamespace = exports.isSomeArray = exports.isArray = exports.isPrimitive = exports.isFormatedDate = exports.hasBool = exports.hasDate = exports.isNumeric = exports.isFunction = exports.isSomeObject = exports.isObject = exports.isSomeString = exports.isEmpty = exports.isDate = exports.isaN = exports.isBool = exports.isNumber = exports.isString = exports.NotImplementedException = void 0;
 
 function _classCallCheck(instance, Constructor) { if (!_instanceof(instance, Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -115,6 +115,12 @@ var isNamespace = function isNamespace(x) {
 };
 
 exports.isNamespace = isNamespace;
+
+var isSubClassOf = function isSubClassOf(child, parent) {
+  return child && isFunction(parent) && (child === parent || _instanceof(child.prototype, parent));
+};
+
+exports.isSubClassOf = isSubClassOf;
 
 var forEach = function forEach(x, callback) {
   var result;
@@ -314,8 +320,7 @@ var Enum = {
 
     return result;
   }
-}; // ---------------------- BASE ------------------------
-
+};
 exports.Enum = Enum;
 
 var NotImplementedException = function NotImplementedException(x) {

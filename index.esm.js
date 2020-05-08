@@ -21,6 +21,7 @@ const isPrimitive    = (x) => isString(x) || isNumber(x) || isDate(x) || isBool(
 const isArray		 = Array.isArray;
 const isSomeArray	 = (x) => isArray(x) && x.length > 0;
 const isNamespace	 = (x) => isSomeString(x) && /^[a-zA-Z]\w*(\.[a-zA-Z]\w*)*$/.test(x);
+const isSubClassOf 	 = (child, parent) => child && isFunction(parent) && (child === parent || child.prototype instanceof parent);
 const forEach		 = (x, callback) => {
 	let result;
 	
@@ -188,30 +189,31 @@ const Enum = {
         return result;
     }
 }
-// ---------------------- BASE ------------------------
+
 const NotImplementedException = x => `${x} is not implemented`;
 
 export {
-    NotImplementedException,
+	NotImplementedException,
 	isString,
 	isNumber,
 	isBool,
 	isaN,
 	isDate,
-    isEmpty,
-    isSomeString,
+	isEmpty,
+	isSomeString,
 	isObject,
-    isSomeObject,
-    isFunction,
-    isNumeric,
+	isSomeObject,
+	isFunction,
+	isNumeric,
 	hasDate,
 	hasBool,
 	isFormatedDate,
-    isPrimitive,
+	isPrimitive,
 	isArray,
 	isSomeArray,
 	isNamespace,
+	isSubClassOf,
 	forEach,
-    BaseEnum,
-    Enum
+	BaseEnum,
+	Enum
 }
