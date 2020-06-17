@@ -3,9 +3,11 @@ const isNumber       = (x) => (typeof x == 'number' || x instanceof Number) && !
 const isDate         = (x) => x instanceof Date && !isNaN(x.valueOf());
 const isBool         = (x) => typeof x == 'boolean' || x instanceof Boolean;
 const isaN      	 = isNumber;
+const isPrimitive    = (x) => isString(x) || isNumber(x) || isDate(x) || isBool(x);
 const isEmpty        = (x) => x == null || (isString(x) && x.trim() == '');
 const isSomeString   = (x) => isString(x) && x.trim() != '';
-const isObject       = (x) => typeof x == 'object' && !isString(x) && !isNumber(x) && x != null;
+const isAnObject     = (x) => typeof x == 'object' && x != null;
+const isObject       = (x) => isAnObject(x) && !isPrimitive(x);
 const isSomeObject   = (x) => isObject(x) && Object.keys(x).length > 0;
 const isFunction     = (x) => typeof x == 'function' && typeof x.nodeType !== 'number';
 const isNumeric      = (x) => (isSomeString(x) || isNumber(x)) && !isNaN(x - parseFloat(x));	// borrowed from jQuery
@@ -17,7 +19,6 @@ const isFormatedDate = (x) => isSomeString(x) && (
 							/^\d{1,4}\/\d{1,4}\/\d{1,4}$/.test(x) ||
 							/^\d{1,4}\\\d{1,4}\\\d{1,4}$/.test(x)
 						);
-const isPrimitive    = (x) => isString(x) || isNumber(x) || isDate(x) || isBool(x);
 const isArray		 = Array.isArray;
 const isSomeArray	 = (x) => isArray(x) && x.length > 0;
 const isNamespace	 = (x) => isSomeString(x) && /^[a-zA-Z]\w*(\.[a-zA-Z]\w*)*$/.test(x);
@@ -196,11 +197,13 @@ export {
 	NotImplementedException,
 	isString,
 	isNumber,
+	isDate,
 	isBool,
 	isaN,
-	isDate,
+	isPrimitive,
 	isEmpty,
 	isSomeString,
+	isAnObject,
 	isObject,
 	isSomeObject,
 	isFunction,
@@ -208,7 +211,6 @@ export {
 	hasDate,
 	hasBool,
 	isFormatedDate,
-	isPrimitive,
 	isArray,
 	isSomeArray,
 	isNamespace,

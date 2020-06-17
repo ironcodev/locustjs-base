@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.Enum = exports.BaseEnum = exports.forEach = exports.isSubClassOf = exports.isNamespace = exports.isSomeArray = exports.isArray = exports.isPrimitive = exports.isFormatedDate = exports.hasBool = exports.hasDate = exports.isNumeric = exports.isFunction = exports.isSomeObject = exports.isObject = exports.isSomeString = exports.isEmpty = exports.isDate = exports.isaN = exports.isBool = exports.isNumber = exports.isString = exports.NotImplementedException = void 0;
+exports.Enum = exports.BaseEnum = exports.forEach = exports.isSubClassOf = exports.isNamespace = exports.isSomeArray = exports.isArray = exports.isFormatedDate = exports.hasBool = exports.hasDate = exports.isNumeric = exports.isFunction = exports.isSomeObject = exports.isObject = exports.isAnObject = exports.isSomeString = exports.isEmpty = exports.isPrimitive = exports.isaN = exports.isBool = exports.isDate = exports.isNumber = exports.isString = exports.NotImplementedException = void 0;
 
 function _classCallCheck(instance, Constructor) { if (!_instanceof(instance, Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -41,6 +41,12 @@ exports.isBool = isBool;
 var isaN = isNumber;
 exports.isaN = isaN;
 
+var isPrimitive = function isPrimitive(x) {
+  return isString(x) || isNumber(x) || isDate(x) || isBool(x);
+};
+
+exports.isPrimitive = isPrimitive;
+
 var isEmpty = function isEmpty(x) {
   return x == null || isString(x) && x.trim() == '';
 };
@@ -53,8 +59,14 @@ var isSomeString = function isSomeString(x) {
 
 exports.isSomeString = isSomeString;
 
+var isAnObject = function isAnObject(x) {
+  return _typeof(x) == 'object' && x != null;
+};
+
+exports.isAnObject = isAnObject;
+
 var isObject = function isObject(x) {
-  return _typeof(x) == 'object' && !isString(x) && !isNumber(x) && x != null;
+  return isAnObject(x) && !isPrimitive(x);
 };
 
 exports.isObject = isObject;
@@ -95,12 +107,6 @@ var isFormatedDate = function isFormatedDate(x) {
 };
 
 exports.isFormatedDate = isFormatedDate;
-
-var isPrimitive = function isPrimitive(x) {
-  return isString(x) || isNumber(x) || isDate(x) || isBool(x);
-};
-
-exports.isPrimitive = isPrimitive;
 var isArray = Array.isArray;
 exports.isArray = isArray;
 
