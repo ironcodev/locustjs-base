@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.Enum = exports.BaseEnum = exports.forEach = exports.isSubClassOf = exports.isNamespace = exports.isSomeArray = exports.isArray = exports.isFormatedDate = exports.hasBool = exports.hasDate = exports.isNumeric = exports.isFunction = exports.isSomeObject = exports.isObject = exports.isAnObject = exports.isSomeString = exports.isEmpty = exports.isPrimitive = exports.isaN = exports.isBool = exports.isDate = exports.isNumber = exports.isString = exports.NotImplementedException = void 0;
+exports.equals = exports.Enum = exports.BaseEnum = exports.forEach = exports.isSubClassOf = exports.isNamespace = exports.isSomeArray = exports.isArray = exports.isFormatedDate = exports.hasBool = exports.hasDate = exports.isNumeric = exports.isFunction = exports.isSomeObject = exports.isObject = exports.isAnObject = exports.isSomeString = exports.isEmpty = exports.isPrimitive = exports.isaN = exports.isBool = exports.isDate = exports.isNumber = exports.isString = exports.NotImplementedException = void 0;
 
 function _classCallCheck(instance, Constructor) { if (!_instanceof(instance, Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -160,6 +160,47 @@ var forEach = function forEach(x, callback) {
 
 exports.forEach = forEach;
 
+var equals = function equals(objA, objB) {
+  var strict = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+
+  if (isPrimitive(objA) || isEmpty(objA) || isFunction(objA)) {
+    return strict ? objA === objB : objA == objB;
+  }
+
+  if (isArray(objA)) {
+    if (isArray(objB) && objA.length == objB.length) {
+      for (var i = 0; i < objA.length; i++) {
+        if (!equals(objA[i], objB[i], strict)) {
+          return false;
+        }
+      }
+
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  var keysA = Object.keys(objA);
+  var keysB = Object.keys(objB);
+
+  if (keysA.length != keysB.length) {
+    return false;
+  }
+
+  for (var _i = 0, _keysA = keysA; _i < _keysA.length; _i++) {
+    var key = _keysA[_i];
+
+    if (!equals(objA[key], objB[key], strict)) {
+      return false;
+    }
+  }
+
+  return true;
+};
+
+exports.equals = equals;
+
 var BaseEnum = /*#__PURE__*/function () {
   function BaseEnum(values, name) {
     _classCallCheck(this, BaseEnum);
@@ -176,8 +217,8 @@ var BaseEnum = /*#__PURE__*/function () {
         }
       }
     } else if (isSomeObject(values)) {
-      for (var _i = 0, _Object$keys = Object.keys(values); _i < _Object$keys.length; _i++) {
-        var key = _Object$keys[_i];
+      for (var _i2 = 0, _Object$keys = Object.keys(values); _i2 < _Object$keys.length; _i2++) {
+        var key = _Object$keys[_i2];
         var _value = values[key];
 
         if (isPrimitive(_value)) {
@@ -198,8 +239,8 @@ var BaseEnum = /*#__PURE__*/function () {
     value: function getNames() {
       var result = [];
 
-      for (var _i2 = 0, _Object$keys2 = Object.keys(this); _i2 < _Object$keys2.length; _i2++) {
-        var key = _Object$keys2[_i2];
+      for (var _i3 = 0, _Object$keys2 = Object.keys(this); _i3 < _Object$keys2.length; _i3++) {
+        var key = _Object$keys2[_i3];
 
         if (typeof key == 'string' && isPrimitive(this[key]) && !isNumeric(key) && key != 'name') {
           result.push(key);
@@ -213,8 +254,8 @@ var BaseEnum = /*#__PURE__*/function () {
     value: function getValues() {
       var result = [];
 
-      for (var _i3 = 0, _Object$keys3 = Object.keys(this); _i3 < _Object$keys3.length; _i3++) {
-        var key = _Object$keys3[_i3];
+      for (var _i4 = 0, _Object$keys3 = Object.keys(this); _i4 < _Object$keys3.length; _i4++) {
+        var key = _Object$keys3[_i4];
 
         if (typeof key == 'string' && isPrimitive(this[key]) && !isNumeric(key) && key != 'name') {
           result.push(this[key]);
@@ -228,8 +269,8 @@ var BaseEnum = /*#__PURE__*/function () {
     value: function toArray() {
       var result = [];
 
-      for (var _i4 = 0, _Object$keys4 = Object.keys(this); _i4 < _Object$keys4.length; _i4++) {
-        var key = _Object$keys4[_i4];
+      for (var _i5 = 0, _Object$keys4 = Object.keys(this); _i5 < _Object$keys4.length; _i5++) {
+        var key = _Object$keys4[_i5];
 
         if (typeof key == 'string' && isPrimitive(this[key]) && !isNumeric(key) && key != 'name') {
           result.push({
@@ -250,8 +291,8 @@ var BaseEnum = /*#__PURE__*/function () {
     key: "getString",
     value: function getString(value, defaultValue) {
       if (!this.isValid(defaultValue)) {
-        for (var _i5 = 0, _Object$keys5 = Object.keys(this); _i5 < _Object$keys5.length; _i5++) {
-          var key = _Object$keys5[_i5];
+        for (var _i6 = 0, _Object$keys5 = Object.keys(this); _i6 < _Object$keys5.length; _i6++) {
+          var key = _Object$keys5[_i6];
 
           if (typeof key == 'string' && isPrimitive(this[key]) && !isNumeric(key) && key != 'name') {
             defaultValue = key;
@@ -274,8 +315,8 @@ var BaseEnum = /*#__PURE__*/function () {
     key: "getNumber",
     value: function getNumber(value, defaultValue) {
       if (!this.isValid(defaultValue)) {
-        for (var _i6 = 0, _Object$keys6 = Object.keys(this); _i6 < _Object$keys6.length; _i6++) {
-          var key = _Object$keys6[_i6];
+        for (var _i7 = 0, _Object$keys6 = Object.keys(this); _i7 < _Object$keys6.length; _i7++) {
+          var key = _Object$keys6[_i7];
 
           if (typeof key == 'string' && isPrimitive(this[key]) && !isNumeric(key) && key != 'name') {
             defaultValue = key;

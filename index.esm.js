@@ -55,6 +55,41 @@ const forEach		 = (x, callback) => {
 	return result;
 }
 
+const equals = function (objA, objB, strict = false) {
+	if (isPrimitive(objA) || isEmpty(objA) || isFunction(objA)) {
+		return strict ? objA === objB : objA == objB;
+	}
+	
+	if (isArray(objA)) {
+		if (isArray(objB) && objA.length == objB.length) {
+			for (let i = 0; i < objA.length; i++) {
+				if (!equals(objA[i], objB[i], strict)) {
+					return false;
+				}
+			}
+			
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	const keysA = Object.keys(objA);
+	const keysB = Object.keys(objB);
+	
+	if (keysA.length != keysB.length) {
+		return false;
+	}
+	
+	for (let key of keysA) {
+		if (!equals(objA[key], objB[key], strict)) {
+			return false;
+		}
+	}
+	
+	return true;
+}
+
 class BaseEnum {
     constructor(values, name) {
         this.name = name;
@@ -217,5 +252,6 @@ export {
 	isSubClassOf,
 	forEach,
 	BaseEnum,
-	Enum
+	Enum,
+	equals
 }
