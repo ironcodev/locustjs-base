@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.equals = exports.Enum = exports.BaseEnum = exports.forEach = exports.isSubClassOf = exports.isNamespace = exports.isSomeArray = exports.isArray = exports.isFormatedDate = exports.hasBool = exports.hasDate = exports.isNumeric = exports.isFunction = exports.isSomeObject = exports.isObject = exports.isAnObject = exports.isSomeString = exports.isEmpty = exports.isPrimitive = exports.isaN = exports.isBool = exports.isDate = exports.isNumber = exports.isString = exports.NotImplementedException = void 0;
+exports.equals = exports.Enum = exports.BaseEnum = exports.forEach = exports.isSubClassOf = exports.isNamespace = exports.isSomeArray = exports.isArray = exports.isFormatedDate = exports.hasBool = exports.hasDate = exports.isSomeNumber = exports.isNumeric = exports.isFunction = exports.isSomeObject = exports.isSomething = exports.isObject = exports.isAnObject = exports.isSomeString = exports.isEmpty = exports.isNull = exports.isPrimitive = exports.isBasic = exports.isaN = exports.isBool = exports.isDate = exports.isNumber = exports.isString = exports.NotImplementedException = void 0;
 
 function _classCallCheck(instance, Constructor) { if (!_instanceof(instance, Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -41,14 +41,28 @@ exports.isBool = isBool;
 var isaN = isNumber;
 exports.isaN = isaN;
 
+var isBasic = function isBasic(x) {
+  var type = _typeof(x);
+
+  return type == 'string' || type == 'number' || type == 'boolean' || isDate(x);
+};
+
+exports.isBasic = isBasic;
+
 var isPrimitive = function isPrimitive(x) {
   return isString(x) || isNumber(x) || isDate(x) || isBool(x);
 };
 
 exports.isPrimitive = isPrimitive;
 
+var isNull = function isNull(x) {
+  return x == null;
+};
+
+exports.isNull = isNull;
+
 var isEmpty = function isEmpty(x) {
-  return x == null || isString(x) && x.trim() == '';
+  return isNull(x) || isString(x) && x.trim() == '';
 };
 
 exports.isEmpty = isEmpty;
@@ -60,7 +74,7 @@ var isSomeString = function isSomeString(x) {
 exports.isSomeString = isSomeString;
 
 var isAnObject = function isAnObject(x) {
-  return _typeof(x) == 'object' && x != null;
+  return _typeof(x) == 'object' && !isNull(x);
 };
 
 exports.isAnObject = isAnObject;
@@ -70,6 +84,12 @@ var isObject = function isObject(x) {
 };
 
 exports.isObject = isObject;
+
+var isSomething = function isSomething(x) {
+  return !isNull(x);
+};
+
+exports.isSomething = isSomething;
 
 var isSomeObject = function isSomeObject(x) {
   return isObject(x) && Object.keys(x).length > 0;
@@ -90,6 +110,12 @@ var isNumeric = function isNumeric(x) {
 
 exports.isNumeric = isNumeric;
 
+var isSomeNumber = function isSomeNumber(x) {
+  return isNumeric(x) && x > 0;
+};
+
+exports.isSomeNumber = isSomeNumber;
+
 var hasDate = function hasDate(x) {
   return (isDate(x) || isString(x) || isNumber(x)) && !isNaN(Date.parse(x));
 };
@@ -97,7 +123,7 @@ var hasDate = function hasDate(x) {
 exports.hasDate = hasDate;
 
 var hasBool = function hasBool(x) {
-  return isBool(x) || isSomeString(x) && ['true', 'false'].indexOf(x.toLowerCase()) >= 0;
+  return isBool(x) || isSomeString(x) && ['true', 'false'].indexOf(x.trim().toLowerCase()) >= 0;
 };
 
 exports.hasBool = hasBool;

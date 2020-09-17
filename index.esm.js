@@ -3,16 +3,23 @@ const isNumber       = (x) => (typeof x == 'number' || x instanceof Number) && !
 const isDate         = (x) => x instanceof Date && !isNaN(x.valueOf());
 const isBool         = (x) => typeof x == 'boolean' || x instanceof Boolean;
 const isaN      	 = isNumber;
+const isBasic		 = (x) => {
+	const type = typeof x;
+	return type == 'string' || type == 'number' || type == 'boolean' || isDate(x);
+}
 const isPrimitive    = (x) => isString(x) || isNumber(x) || isDate(x) || isBool(x);
-const isEmpty        = (x) => x == null || (isString(x) && x.trim() == '');
+const isNull		 = (x) => x == null;
+const isEmpty        = (x) => isNull(x) || (isString(x) && x.trim() == '');
 const isSomeString   = (x) => isString(x) && x.trim() != '';
-const isAnObject     = (x) => typeof x == 'object' && x != null;
+const isAnObject     = (x) => typeof x == 'object' && !isNull(x);
 const isObject       = (x) => isAnObject(x) && !isPrimitive(x);
+const isSomething	 = (x) => !isNull(x);
 const isSomeObject   = (x) => isObject(x) && Object.keys(x).length > 0;
 const isFunction     = (x) => typeof x == 'function' && typeof x.nodeType !== 'number';
 const isNumeric      = (x) => (isSomeString(x) || isNumber(x)) && !isNaN(x - parseFloat(x));	// borrowed from jQuery
+const isSomeNumber	 = (x) => isNumeric(x) && x > 0;
 const hasDate        = (x) => (isDate(x) || isString(x) || isNumber(x)) && !isNaN(Date.parse(x));
-const hasBool		 = (x) => isBool(x) || (isSomeString(x) && ['true', 'false'].indexOf(x.toLowerCase()) >= 0);
+const hasBool		 = (x) => isBool(x) || (isSomeString(x) && ['true', 'false'].indexOf(x.trim().toLowerCase()) >= 0);
 const isFormatedDate = (x) => isSomeString(x) && (
 							/^\d{1,4}\.\d{1,4}\.\d{1,4}$/.test(x) ||
 							/^\d{1,4}-\d{1,4}-\d{1,4}$/.test(x) ||
@@ -235,14 +242,18 @@ export {
 	isDate,
 	isBool,
 	isaN,
+	isBasic,
 	isPrimitive,
+	isNull,
 	isEmpty,
 	isSomeString,
 	isAnObject,
 	isObject,
+	isSomething,
 	isSomeObject,
 	isFunction,
 	isNumeric,
+	isSomeNumber,
 	hasDate,
 	hasBool,
 	isFormatedDate,
