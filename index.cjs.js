@@ -3,13 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.equals = exports.Enum = exports.BaseEnum = exports.forEach = exports.isSubClassOf = exports.isNamespace = exports.isSomeArray = exports.isArray = exports.isFormatedDate = exports.hasBool = exports.hasDate = exports.isSomeNumber = exports.isNumeric = exports.isFunction = exports.isSomeObject = exports.isSomething = exports.isObject = exports.isAnObject = exports.isSomeString = exports.isEmpty = exports.isNull = exports.isPrimitive = exports.isBasic = exports.isaN = exports.isBool = exports.isDate = exports.isNumber = exports.isString = exports.NotImplementedException = void 0;
-
-function _classCallCheck(instance, Constructor) { if (!_instanceof(instance, Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+exports.similars = exports.equals = exports.forEach = exports.isSubClassOf = exports.isNamespace = exports.isSomeArray = exports.isIterable = exports.isArray = exports.isFormatedDate = exports.hasBool = exports.hasDate = exports.isSomeNumber = exports.isNumeric = exports.isFunction = exports.isSomeObject = exports.isSomething = exports.isObject = exports.isAnObject = exports.isSomeString = exports.isEmpty = exports.isNull = exports.isPrimitive = exports.isBasic = exports.isaN = exports.isBool = exports.isDate = exports.isNumber = exports.isString = void 0;
 
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
@@ -136,6 +130,15 @@ exports.isFormatedDate = isFormatedDate;
 var isArray = Array.isArray;
 exports.isArray = isArray;
 
+var isIterable = function isIterable(x) {
+  // source: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/@@iterator
+  return Symbol.iterator in Object.getPrototypeOf(x);
+  /*	or "Symbol.iterator in Object.__proto__" 
+  	or "it[Symbol.iterator]" */
+};
+
+exports.isIterable = isIterable;
+
 var isSomeArray = function isSomeArray(x) {
   return isArray(x) && x.length > 0;
 };
@@ -227,177 +230,45 @@ var equals = function equals(objA, objB) {
 
 exports.equals = equals;
 
-var BaseEnum = /*#__PURE__*/function () {
-  function BaseEnum(values, name) {
-    _classCallCheck(this, BaseEnum);
+var similars = function similars(objA, objB) {
+  if (isPrimitive(objA)) {
+    if (isPrimitive(objB)) {
+      return _typeof(objA) == _typeof(objB);
+    }
 
-    this.name = name;
+    return false;
+  }
 
-    if (isArray(values)) {
-      for (var i; i < values.length; i++) {
-        var value = values[i];
-
-        if (isPrimitive(value)) {
-          this[i] = value;
-          this[value] = i;
+  if (isArray(objA)) {
+    if (isArray(objB) && objA.length == objB.length) {
+      for (var i = 0; i < objA.length; i++) {
+        if (!similars(objA[i], objB[i])) {
+          return false;
         }
       }
-    } else if (isSomeObject(values)) {
-      for (var _i2 = 0, _Object$keys = Object.keys(values); _i2 < _Object$keys.length; _i2++) {
-        var key = _Object$keys[_i2];
-        var _value = values[key];
 
-        if (isPrimitive(_value)) {
-          this[key] = _value;
-          this[_value] = key;
-        }
-      }
+      return true;
+    } else {
+      return false;
     }
   }
 
-  _createClass(BaseEnum, [{
-    key: "equals",
-    value: function equals(value1, value2) {
-      return Enum.equals(this, value1, value2);
-    }
-  }, {
-    key: "getNames",
-    value: function getNames() {
-      var result = [];
+  var keysA = Object.keys(objA);
+  var keysB = Object.keys(objB);
 
-      for (var _i3 = 0, _Object$keys2 = Object.keys(this); _i3 < _Object$keys2.length; _i3++) {
-        var key = _Object$keys2[_i3];
-
-        if (typeof key == 'string' && isPrimitive(this[key]) && !isNumeric(key) && key != 'name') {
-          result.push(key);
-        }
-      }
-
-      return result;
-    }
-  }, {
-    key: "getValues",
-    value: function getValues() {
-      var result = [];
-
-      for (var _i4 = 0, _Object$keys3 = Object.keys(this); _i4 < _Object$keys3.length; _i4++) {
-        var key = _Object$keys3[_i4];
-
-        if (typeof key == 'string' && isPrimitive(this[key]) && !isNumeric(key) && key != 'name') {
-          result.push(this[key]);
-        }
-      }
-
-      return result;
-    }
-  }, {
-    key: "toArray",
-    value: function toArray() {
-      var result = [];
-
-      for (var _i5 = 0, _Object$keys4 = Object.keys(this); _i5 < _Object$keys4.length; _i5++) {
-        var key = _Object$keys4[_i5];
-
-        if (typeof key == 'string' && isPrimitive(this[key]) && !isNumeric(key) && key != 'name') {
-          result.push({
-            name: key,
-            value: this[key]
-          });
-        }
-      }
-
-      return result;
-    }
-  }, {
-    key: "isValid",
-    value: function isValid(value) {
-      return !(value == null || this[value] == undefined);
-    }
-  }, {
-    key: "getString",
-    value: function getString(value, defaultValue) {
-      if (!this.isValid(defaultValue)) {
-        for (var _i6 = 0, _Object$keys5 = Object.keys(this); _i6 < _Object$keys5.length; _i6++) {
-          var key = _Object$keys5[_i6];
-
-          if (typeof key == 'string' && isPrimitive(this[key]) && !isNumeric(key) && key != 'name') {
-            defaultValue = key;
-            break;
-          }
-        }
-      }
-
-      var result = this.isValid(value) ? value : defaultValue ? defaultValue : undefined;
-
-      if (result != undefined) {
-        if (typeof result != 'string') {
-          result = this[result];
-        }
-      }
-
-      return result;
-    }
-  }, {
-    key: "getNumber",
-    value: function getNumber(value, defaultValue) {
-      if (!this.isValid(defaultValue)) {
-        for (var _i7 = 0, _Object$keys6 = Object.keys(this); _i7 < _Object$keys6.length; _i7++) {
-          var key = _Object$keys6[_i7];
-
-          if (typeof key == 'string' && isPrimitive(this[key]) && !isNumeric(key) && key != 'name') {
-            defaultValue = key;
-            break;
-          }
-        }
-      }
-
-      var result = this.isValid(value) ? value : defaultValue ? defaultValue : undefined;
-
-      if (result != undefined) {
-        if (!isNumber(result)) {
-          result = this[result];
-        }
-      }
-
-      return result;
-    }
-  }]);
-
-  return BaseEnum;
-}();
-
-exports.BaseEnum = BaseEnum;
-var Enum = {
-  define: function define(values, name) {
-    var result = Object.freeze(new BaseEnum(values, name));
-    return result;
-  },
-  equals: function equals(enumType, value1, value2) {
-    var result = false;
-
-    if (isSomeObject(enumType) && isPrimitive(value1) && isPrimitive(value2)) {
-      if (isNumeric(value1)) {
-        if (isNumeric(value2)) {
-          result = value1 == value2 && enumType[value1] != undefined;
-        } else {
-          result = value1 == enumType[value2];
-        }
-      } else {
-        if (isNumeric(value2)) {
-          result = value1 == enumType[value2];
-        } else {
-          result = value1 == value2 && enumType[value1] != undefined;
-        }
-      }
-    }
-
-    return result;
+  if (keysA.length != keysB.length) {
+    return false;
   }
-};
-exports.Enum = Enum;
 
-var NotImplementedException = function NotImplementedException(x) {
-  return "".concat(x, " is not implemented");
+  for (var _i2 = 0, _keysA2 = keysA; _i2 < _keysA2.length; _i2++) {
+    var key = _keysA2[_i2];
+
+    if (!similars(objA[key], objB[key])) {
+      return false;
+    }
+  }
+
+  return true;
 };
 
-exports.NotImplementedException = NotImplementedException;
+exports.similars = similars;

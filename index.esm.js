@@ -27,6 +27,11 @@ const isFormatedDate = (x) => isSomeString(x) && (
 							/^\d{1,4}\\\d{1,4}\\\d{1,4}$/.test(x)
 						);
 const isArray		 = Array.isArray;
+const isIterable	 = function (x) {	 	// source: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/@@iterator
+							return (Symbol.iterator in Object.getPrototypeOf(x));
+								/*	or "Symbol.iterator in Object.__proto__" 
+									or "it[Symbol.iterator]" */
+						};
 const isSomeArray	 = (x) => isArray(x) && x.length > 0;
 const isNamespace	 = (x) => isSomeString(x) && /^[a-zA-Z]\w*(\.[a-zA-Z]\w*)*$/.test(x);
 const isSubClassOf 	 = (child, parent) => child && isFunction(parent) && (child === parent || child.prototype instanceof parent);
@@ -97,146 +102,46 @@ const equals = function (objA, objB, strict = false) {
 	return true;
 }
 
-class BaseEnum {
-    constructor(values, name) {
-        this.name = name;
-
-        if (isArray(values)) {
-            for (let i; i < values.length; i++) {
-                const value = values[i];
-
-                if (isPrimitive(value)) {
-                    this[i] = value;
-                    this[value] = i;
-                }
-            }
-        } else if (isSomeObject(values)) {
-            for (let key of Object.keys(values)) {
-				const value = values[key];
-
-				if (isPrimitive(value)) {
-					this[key] = value;
-                    this[value] = key;
-                }
-            }
-        }
-    }
-    equals(value1, value2) {
-        return Enum.equals(this, value1, value2);
-    }
-	getNames() {
-		let result = [];
-
-        for (let key of Object.keys(this)) {
-            if (typeof key == 'string' && isPrimitive(this[key]) && !isNumeric(key) && key != 'name') {
-                result.push(key)
-            }
-        }
-
-        return result;
+const similars = function (objA, objB) {
+	if (isPrimitive(objA)) {
+		if (isPrimitive(objB)) {
+			return typeof objA == typeof objB;
+		}
+		
+		return false;
 	}
-    getValues() {
-        let result = [];
-
-        for (let key of Object.keys(this)) {
-            if (typeof key == 'string' && isPrimitive(this[key]) && !isNumeric(key) && key != 'name') {
-                result.push(this[key])
-            }
-        }
-
-        return result;
-    }
-	toArray() {
-        let result = [];
-
-        for (let key of Object.keys(this)) {
-            if (typeof key == 'string' && isPrimitive(this[key]) && !isNumeric(key) && key != 'name') {
-                result.push({ name: key, value: this[key] })
-            }
-        }
-
-        return result;
-    }
-	isValid(value) {
-		return !(value == null || this[value] == undefined);
-	}
-	getString(value, defaultValue) {
-		if (!this.isValid(defaultValue)) {
-			for (let key of Object.keys(this)) {
-				if (typeof key == 'string' && isPrimitive(this[key]) && !isNumeric(key) && key != 'name') {
-					defaultValue = key;
-					
-					break;
+	
+	if (isArray(objA)) {
+		if (isArray(objB) && objA.length == objB.length) {
+			for (let i = 0; i < objA.length; i++) {
+				if (!similars(objA[i], objB[i])) {
+					return false;
 				}
 			}
+			
+			return true;
+		} else {
+			return false;
 		}
-		
-		let result = this.isValid(value) ? value: defaultValue ? defaultValue: undefined;
-		
-		if (result != undefined) {
-			if (typeof result != 'string') {
-				result = this[result];
-			}
-		}
-		
-		return result;
 	}
-	getNumber(value, defaultValue) {
-		if (!this.isValid(defaultValue)) {
-			for (let key of Object.keys(this)) {
-				if (typeof key == 'string' && isPrimitive(this[key]) && !isNumeric(key) && key != 'name') {
-					defaultValue = key;
-					
-					break;
-				}
-			}
-		}
-		
-		let result = this.isValid(value) ? value: defaultValue ? defaultValue: undefined;
-		
-		if (result != undefined) {
-			if (!isNumber(result)) {
-				result = this[result];
-			}
-		}
-		
-		return result;
+	
+	const keysA = Object.keys(objA);
+	const keysB = Object.keys(objB);
+	
+	if (keysA.length != keysB.length) {
+		return false;
 	}
+	
+	for (let key of keysA) {
+		if (!similars(objA[key], objB[key])) {
+			return false;
+		}
+	}
+	
+	return true;
 }
-
-const Enum = {
-    define: function (values, name) {
-        const result = Object.freeze(new BaseEnum(values, name));
-
-        return result;
-    },
-    equals: function (enumType, value1, value2) {
-        let result = false;
-
-        if (isSomeObject(enumType) && isPrimitive(value1) && isPrimitive(value2)) {
-            if (isNumeric(value1)) {
-                if (isNumeric(value2)) {
-                    result = value1 == value2 && enumType[value1] != undefined;
-                } else {
-                    result = value1 == enumType[value2];
-                }
-            } else {
-                if (isNumeric(value2)) {
-                    result = value1 == enumType[value2];
-                } else {
-                    result = value1 == value2 && enumType[value1] != undefined;
-                }
-            }
-        }
-
-        return result;
-    }
-}
-
-const NotImplementedException = x => `${x} is not implemented`;
 
 export {
-	NotImplementedException,
 	isString,
 	isNumber,
 	isDate,
@@ -258,11 +163,11 @@ export {
 	hasBool,
 	isFormatedDate,
 	isArray,
+	isIterable,
 	isSomeArray,
 	isNamespace,
 	isSubClassOf,
 	forEach,
-	BaseEnum,
-	Enum,
-	equals
+	equals,
+	similars
 }
