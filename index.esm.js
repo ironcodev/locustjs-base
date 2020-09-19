@@ -18,6 +18,7 @@ const isSomeObject   = (x) => isObject(x) && Object.keys(x).length > 0;
 const isFunction     = (x) => typeof x == 'function' && typeof x.nodeType !== 'number';
 const isNumeric      = (x) => (isSomeString(x) || isNumber(x)) && !isNaN(x - parseFloat(x));	// borrowed from jQuery
 const isSomeNumber	 = (x) => isNumeric(x) && x > 0;
+const isjQueryElement = (x) => isObject(x) && isSomeString(x.jquery);
 const hasDate        = (x) => (isDate(x) || isString(x) || isNumber(x)) && !isNaN(Date.parse(x));
 const hasBool		 = (x) => isBool(x) || (isSomeString(x) && ['true', 'false'].indexOf(x.trim().toLowerCase()) >= 0);
 const isFormatedDate = (x) => isSomeString(x) && (
@@ -159,6 +160,7 @@ export {
 	isFunction,
 	isNumeric,
 	isSomeNumber,
+	isjQueryElement,
 	hasDate,
 	hasBool,
 	isFormatedDate,

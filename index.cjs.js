@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.similars = exports.equals = exports.forEach = exports.isSubClassOf = exports.isNamespace = exports.isSomeArray = exports.isIterable = exports.isArray = exports.isFormatedDate = exports.hasBool = exports.hasDate = exports.isSomeNumber = exports.isNumeric = exports.isFunction = exports.isSomeObject = exports.isSomething = exports.isObject = exports.isAnObject = exports.isSomeString = exports.isEmpty = exports.isNull = exports.isPrimitive = exports.isBasic = exports.isaN = exports.isBool = exports.isDate = exports.isNumber = exports.isString = void 0;
+exports.similars = exports.equals = exports.forEach = exports.isSubClassOf = exports.isNamespace = exports.isSomeArray = exports.isIterable = exports.isArray = exports.isFormatedDate = exports.hasBool = exports.hasDate = exports.isjQueryElement = exports.isSomeNumber = exports.isNumeric = exports.isFunction = exports.isSomeObject = exports.isSomething = exports.isObject = exports.isAnObject = exports.isSomeString = exports.isEmpty = exports.isNull = exports.isPrimitive = exports.isBasic = exports.isaN = exports.isBool = exports.isDate = exports.isNumber = exports.isString = void 0;
 
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
@@ -109,6 +109,12 @@ var isSomeNumber = function isSomeNumber(x) {
 };
 
 exports.isSomeNumber = isSomeNumber;
+
+var isjQueryElement = function isjQueryElement(x) {
+  return isObject(x) && isSomeString(x.jquery);
+};
+
+exports.isjQueryElement = isjQueryElement;
 
 var hasDate = function hasDate(x) {
   return (isDate(x) || isString(x) || isNumber(x)) && !isNaN(Date.parse(x));
