@@ -47,6 +47,6 @@ describe('locustjs-base test suite: testing isSomeObject', function() {
   });
   
   it(`isSomeObject([10, 20])`, function() {
-     expect(locust.isSomeObject([10, 20])).toBe(true);
+     expect(locust.isSomeObject([10, 20])).toBe(false);
   });
 });

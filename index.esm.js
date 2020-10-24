@@ -14,7 +14,7 @@ const isSomeString   = (x) => isString(x) && x.trim() != '';
 const isAnObject     = (x) => typeof x == 'object' && !isNull(x);
 const isObject       = (x) => isAnObject(x) && !isPrimitive(x);
 const isSomething	 = (x) => !isNull(x);
-const isSomeObject   = (x) => isObject(x) && Object.keys(x).length > 0;
+const isSomeObject   = (x) => isObject(x) && !isArray(x) && Object.keys(x).length > 0;
 const isFunction     = (x) => typeof x == 'function' && typeof x.nodeType !== 'number';
 const isNumeric      = (x) => (isSomeString(x) || isNumber(x)) && !isNaN(x - parseFloat(x));	// borrowed from jQuery
 const isSomeNumber	 = (x) => isNumeric(x) && x > 0;

@@ -86,7 +86,7 @@ var isSomething = function isSomething(x) {
 exports.isSomething = isSomething;
 
 var isSomeObject = function isSomeObject(x) {
-  return isObject(x) && Object.keys(x).length > 0;
+  return isObject(x) && !isArray(x) && Object.keys(x).length > 0;
 };
 
 exports.isSomeObject = isSomeObject;
