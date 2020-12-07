@@ -56,7 +56,7 @@ var isNull = function isNull(x) {
 exports.isNull = isNull;
 
 var isEmpty = function isEmpty(x) {
-  return isNull(x) || isString(x) && x.trim() == '';
+  return isNull(x) || typeof x == 'number' && isNaN(x) || isString(x) && x.trim() == '';
 };
 
 exports.isEmpty = isEmpty;

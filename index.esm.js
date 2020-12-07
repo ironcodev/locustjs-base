@@ -9,7 +9,7 @@ const isBasic		 = (x) => {
 }
 const isPrimitive    = (x) => isString(x) || isNumber(x) || isDate(x) || isBool(x);
 const isNull		 = (x) => x == null;
-const isEmpty        = (x) => isNull(x) || (isString(x) && x.trim() == '');
+const isEmpty        = (x) => isNull(x) || (typeof x == 'number' && isNaN(x)) || (isString(x) && x.trim() == '');
 const isSomeString   = (x) => isString(x) && x.trim() != '';
 const isAnObject     = (x) => typeof x == 'object' && !isNull(x);
 const isObject       = (x) => isAnObject(x) && !isPrimitive(x);
