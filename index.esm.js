@@ -29,10 +29,22 @@ const isFormatedDate = (x) => isSomeString(x) && (
 						);
 const isArray		 = Array.isArray;
 const isIterable	 = function (x) {	 	// source: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/@@iterator
-							return (Symbol.iterator in Object.getPrototypeOf(x));
-								/*	or "Symbol.iterator in Object.__proto__" 
-									or "it[Symbol.iterator]" */
-						};
+	if (!x) {
+		return false;
+	}
+
+	if (typeof x[Symbol.iterator] == 'function') {
+		return true;
+	}
+
+	let parent = Object.getPrototypeOf(x);
+
+	if (parent && typeof parent[Symbol.iterator] == 'function') {	/*	or "Symbol.iterator in Object.__proto__" or "it[Symbol.iterator]" */
+		return true;
+	}
+
+	return false;
+};
 const isSomeArray	 = (x) => isArray(x) && x.length > 0;
 const isNamespace	 = (x) => isSomeString(x) && /^[a-zA-Z]\w*(\.[a-zA-Z]\w*)*$/.test(x);
 const isSubClassOf 	 = (child, parent) => child && isFunction(parent) && (child === parent || child.prototype instanceof parent);
@@ -40,7 +52,7 @@ const forEach		 = (x, callback) => {
 	let result;
 	
 	if (!isFunction(callback)) {
-		throw `expected function for callback.`
+		throw `@locustjs/base: forEach: expected function for callback.`
 	}
 	
 	if (!isEmpty(x)) {
