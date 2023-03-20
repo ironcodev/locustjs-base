@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.similars = exports.isjQueryElement = exports.isaN = exports.isSubClassOf = exports.isString = exports.isSomething = exports.isSomeString = exports.isSomeObject = exports.isSomeNumber = exports.isSomeArray = exports.isPrimitive = exports.isObject = exports.isNumeric = exports.isNumber = exports.isNull = exports.isNamespace = exports.isIterable = exports.isFunction = exports.isFormatedDate = exports.isEmpty = exports.isDate = exports.isBool = exports.isBasic = exports.isArray = exports.isAnObject = exports.hasDate = exports.hasBool = exports.forEach = exports.equals = void 0;
+exports.similars = exports.isjQueryElement = exports.isaN = exports.isSubClassOf = exports.isString = exports.isSomething = exports.isSomeString = exports.isSomeObject = exports.isSomeNumber = exports.isSomeArray = exports.isPrimitive = exports.isObject = exports.isNumeric = exports.isNumber = exports.isNullOrEmpty = exports.isNull = exports.isNamespace = exports.isIterable = exports.isFunction = exports.isFormatedDate = exports.isEmpty = exports.isDate = exports.isBool = exports.isBasic = exports.isArray = exports.isAnObject = exports.hasDate = exports.hasBool = exports.forEach = exports.equals = void 0;
 function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 var isString = function isString(x, n) {
   return (typeof x == 'string' || x instanceof String) && (n == undefined || x.length == n);
@@ -36,6 +36,10 @@ var isNull = function isNull(x) {
   return x == null;
 };
 exports.isNull = isNull;
+var isNullOrEmpty = function isNullOrEmpty(x) {
+  return isNull(x) || isString(x) && x.length == 0;
+};
+exports.isNullOrEmpty = isNullOrEmpty;
 var isEmpty = function isEmpty(x) {
   return isNull(x) || typeof x == 'number' && isNaN(x) || isString(x) && x.trim() == '';
 };
