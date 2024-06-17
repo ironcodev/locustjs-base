@@ -8,20 +8,23 @@ const isBasic		 = (x) => {
 	return type == 'string' || type == 'number' || type == 'boolean' || isDate(x);
 }
 const isPrimitive    = (x) => isString(x) || isNumber(x) || isDate(x) || isBool(x);
-const isNull		 = (x) => x == null;
-const isNullOrEmpty	 = (x) => isNull(x) || (isString(x) && x.length == 0);
-const isEmpty        = (x) => isNull(x) || (typeof x == 'number' && isNaN(x)) || (isString(x) && x.trim() == '');
+const isNull		 = (x) => x === null;
+const isUndefined	 = (x) => x === undefined;
+const isNullOrEmpty	 = (x) => isNull(x) || isUndefined(x) || (typeof x == 'number' && isNaN(x)) || (isString(x) && x.length == 0);
+const isEmpty        = (x) => isNull(x) || isUndefined(x) || (typeof x == 'number' && isNaN(x)) || (isString(x) && x.trim() == '');
 const isSomeString   = (x) => isString(x) && x.trim() != '';
 const isAnObject     = (x) => typeof x == 'object' && !isNull(x);
 const isObject       = (x) => isAnObject(x) && !isPrimitive(x);
-const isSomething	 = (x) => !isNull(x);
+const isSomething	 = (x) => !isNull(x) && !isUndefined(x) && !(typeof x == 'number' && isNaN(x));
 const isSomeObject   = (x) => isObject(x) && !isArray(x) && Object.keys(x).length > 0;
 const isFunction     = (x) => typeof x == 'function' && typeof x.nodeType !== 'number';
 const isNumeric      = (x) => (isSomeString(x) || isNumber(x)) && !isNaN(x - parseFloat(x));	// borrowed from jQuery
-const isSomeNumber	 = (x) => isNumeric(x) && x > 0;
+const isInteger		 = Number.isInteger;
+const isFloat		 = (x) => isNumeric(x) && (Math.floor(x) - x) != 0;
+const isSomeNumber	 = (x) => isNumeric(x) && x != 0;
 const isjQueryElement = (x) => isObject(x) && isSomeString(x.jquery);
 const hasDate        = (x) => (isDate(x) || isString(x) || isNumber(x)) && !isNaN(Date.parse(x));
-const hasBool		 = (x) => isBool(x) || (isSomeString(x) && ['true', 'false'].indexOf(x.trim().toLowerCase()) >= 0);
+const hasBool		 = (x, ignoreCase = true) => isBool(x) || (isSomeString(x) && ['true', 'false'].indexOf(ignoreCase ? x.trim().toLowerCase(): x.trim()) >= 0);
 const isFormatedDate = (x) => isSomeString(x) && (
 							/^\d{1,4}\.\d{1,4}\.\d{1,4}$/.test(x) ||
 							/^\d{1,4}-\d{1,4}-\d{1,4}$/.test(x) ||
@@ -50,30 +53,58 @@ const isSomeArray	 = (x) => isArray(x) && x.length > 0;
 const isNamespace	 = (x) => isSomeString(x) && /^[a-zA-Z]\w*(\.[a-zA-Z]\w*)*$/.test(x);
 const isSubClassOf 	 = (child, parent) => child && isFunction(parent) && (child === parent || child.prototype instanceof parent);
 const forEach		 = (x, callback) => {
-	let result;
+	let result = [];
 	
+	if (isUndefined(callback)) {
+		callback = () => {}
+	}
+
 	if (!isFunction(callback)) {
 		throw `@locustjs/base: forEach: expected function for callback.`
 	}
 	
 	if (!isEmpty(x)) {
-		const _keys = Object.keys(x);
+		if (isArray(x)) {
+			for (let i = 0; i < x.length; i++) {
+				const args = {
+					source: x,
+					index: i,
+					key: i,
+					value: x[i],
+					count: x.length
+				};
+				
+				const r = callback(args);
+	
+				if (args.break) {
+					break;
+				}
 
-		for (let i = 0; i < _keys.length; i++) {
-			const args = {
-				source: x,
-				index: i,
-				key: _keys[i],
-				value: x[_keys[i]],
-				count: _keys.length
-			};
-			
-			const r = callback(args);
+				if (!args.skip) {
+					result.push(r || args.result || { index: i, key: i, value: x[i] });
+				}
+			}
+		} else if (isObject(x)) {
+			const _keys = Object.keys(x);
+	
+			for (let i = 0; i < _keys.length; i++) {
+				const args = {
+					source: x,
+					index: i,
+					key: _keys[i],
+					value: x[_keys[i]],
+					count: _keys.length
+				};
+				
+				const r = callback(args);
 
-			if (args.break) {
-				result = r || args.result;
-
-				break;
+				if (args.break) {
+					break;
+				}
+				
+				if (!args.skip) {
+					result.push(r || args.result || { index: i, key: _keys[i], value: x[i] });
+				}
 			}
 		}
 	}
@@ -82,7 +113,11 @@ const forEach		 = (x, callback) => {
 }
 
 const equals = function (objA, objB, strict = false) {
-	if (isPrimitive(objA) || isEmpty(objA) || isFunction(objA)) {
+	if (isPrimitive(objA) || isNullOrEmpty(objA) || isFunction(objA)) {
+		return strict ? objA === objB : objA == objB;
+	}
+
+	if (isPrimitive(objB) || isNullOrEmpty(objB) || isFunction(objB)) {
 		return strict ? objA === objB : objA == objB;
 	}
 	
@@ -155,6 +190,128 @@ const similars = function (objA, objB) {
 	return true;
 }
 
+const queryObject = (obj, path) => {
+	if (isSomeObject(obj) && isSomeString(path)) {
+		const arr = path.split('.')
+		let cur = obj
+
+		for (let prop of arr) {
+			if (cur == undefined) {
+				break
+			}
+
+			const openBracketIndex = prop.indexOf('[')
+			let index;
+			let propName;
+
+			if (openBracketIndex > 0) {
+				const closeBracketIndex = prop.indexOf(']', openBracketIndex);
+
+				if (closeBracketIndex > 0) {
+					index = prop.substr(openBracketIndex + 1, closeBracketIndex - openBracketIndex - 1)
+
+					if (isNumeric(index)) {
+						index = parseInt(index)
+						propName = prop.substr(0, openBracketIndex)
+					}
+				}
+			} else {
+				propName = prop
+			}
+
+			if (propName) {
+				cur = cur[propName]
+
+				if (isArray(cur) && isNumber(index) && index >= 0 && index < cur.length) {
+					cur = cur[index]
+				}
+			} else {
+				break;
+			}
+		}
+
+		return cur;
+	}
+}
+
+class ConversionBase {
+	get _name() {
+		return this.constructor.name
+	}
+	toBool(x) {
+		throw `${this.name}.toBool() is not implemented`
+	}
+	toNumber(x) {
+		throw `${this.name}.toNumber() is not implemented`
+	}
+	toDate(x) {
+		throw `${this.name}.toDate() is not implemented`
+	}
+}
+
+class ConversionDefault extends ConversionBase {
+	toBool(x) {
+		if (hasBool(x)) {
+			if (isBool(x)) {
+				return x;
+			}
+			
+			return x.trim().toLowerCase() == 'true';
+		}
+		if (isSomeNumber(x)) {
+			return true;
+		}
+
+		return false;
+	}
+	toNumber(x) {
+		if (isNumeric(x)) {
+			return new Number(x)
+		}
+
+		return 0;
+	}
+	toDate(x, defaultValue = new Date()) {
+		if (isDate(x)) {
+			return x
+		}
+		if (isFormatedDate(x)) {
+			return new Date(x)
+		}
+		if (isNumeric(x)) {
+			return new Date(x)
+		}
+		if (hasDate(x)) {
+			return new Date(Date.parse(x))
+		}
+
+		return defaultValue
+	}
+}
+
+let convert = new ConversionDefault()
+class Convert {
+	static get instance() {
+		return convert;
+	}
+	static set instance(x) {
+		if (!(x instanceof ConversionBase)) {
+			throw `input type must be a subclass of ConversionBase`
+		}
+
+		convert = x
+	}
+	static toBool(x) {
+		return convert.toBool(x)
+	}
+	static toNumber(x) {
+		return convert.toNumber(x)
+	}
+	static toDate(x) {
+		return convert.toDate(x)
+	}
+}
+
 export {
 	isString,
 	isNumber,
@@ -164,6 +321,7 @@ export {
 	isBasic,
 	isPrimitive,
 	isNull,
+	isUndefined,
 	isNullOrEmpty,
 	isEmpty,
 	isSomeString,
@@ -173,6 +331,8 @@ export {
 	isSomeObject,
 	isFunction,
 	isNumeric,
+	isInteger,
+	isFloat,
 	isSomeNumber,
 	isjQueryElement,
 	hasDate,
@@ -185,5 +345,9 @@ export {
 	isSubClassOf,
 	forEach,
 	equals,
-	similars
+	//similars,	=> not ready yet
+	queryObject,
+	ConversionBase,
+	ConversionDefault,
+	Convert
 }

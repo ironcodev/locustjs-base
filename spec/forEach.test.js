@@ -2,17 +2,6 @@ import { forEach } from '../index.esm.js'
 
 // -------------- forEach -----------------
 describe('locustjs-base test suite: testing forEach', function() {
-	it(`should fail not specifying forEach's callback`, function() {
-		let result;
-		
-		try {
-			forEach({});
-		} catch {
-			result = true
-		}
-		expect(result).toBe(true);
-	});
-
 	it(`should fail passing not a function to forEach's callback`, function() {
 		let result;
 		
@@ -26,7 +15,7 @@ describe('locustjs-base test suite: testing forEach', function() {
 	
 	it(`should count to 2 forEach({a: 1, b: 2}, a => count++)`, function() {
 		let count = 0;
-		forEach({ a: 1, b: 2}, a => count++);
+		forEach({ a: 1, b: 2}, () => count++);
 		
 		expect(count).toBe(2);
 	});
@@ -52,14 +41,13 @@ describe('locustjs-base test suite: testing forEach', function() {
 	});
 	
 	it(`should break on third item and return 30: forEach([10, 20, 30, 40], a => { if (a.index == 2) { a.break = true; return a.value } })`, function() {
-		let value = forEach([10, 20, 30, 40], a => {
+		const items = forEach([10, 20, 30, 40], a => {
 			if (a.index == 2) {
 				a.break = true;
-				return a.value
 			}
 		})
 		
-		expect(value).toBe(30);
+		expect(items.length).toBe(2);
 	});
 	
 	it(`should report 'abc' forEach({a: 10, b: 20, c: 30}, a => keys += a.key)`, function() {
@@ -69,12 +57,11 @@ describe('locustjs-base test suite: testing forEach', function() {
 		expect(keys).toBe('abc');
 	});
 	
-	it(`should report 3 forEach({a: 10, b: 20, c: 30}, a => { a.break = true; return a.count;})`, function() {
-		let count = forEach({a: 10, b: 20, c: 30}, a => {
-			a.break = true;
-			return a.count;
+	it(`should skip odd items forEach({a: 10, b: 15, c: 20}, a => { a.skip = a.value % 2 != 0; })`, function() {
+		const items = forEach({a: 10, b: 15, c: 20}, a => {
+			a.skip = a.value % 2 != 0;
 		})
 		
-		expect(count).toBe(3);
+		expect(items.length).toBe(2);
 	});
 });
