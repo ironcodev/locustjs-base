@@ -272,7 +272,7 @@ var similars = function similars(objA, objB) {
   return true;
 };
 var queryObject = function queryObject(obj, path) {
-  if (isSomeObject(obj) && isSomeString(path)) {
+  if ((isSomeObject(obj) || isSomeArray(obj)) && isSomeString(path)) {
     var arr = path.split('.');
     var cur = obj;
     var _iterator = _createForOfIteratorHelper(arr),
@@ -286,7 +286,7 @@ var queryObject = function queryObject(obj, path) {
         var openBracketIndex = prop.indexOf('[');
         var index = void 0;
         var propName = void 0;
-        if (openBracketIndex > 0) {
+        if (openBracketIndex >= 0) {
           var closeBracketIndex = prop.indexOf(']', openBracketIndex);
           if (closeBracketIndex > 0) {
             index = prop.substr(openBracketIndex + 1, closeBracketIndex - openBracketIndex - 1);
@@ -304,7 +304,11 @@ var queryObject = function queryObject(obj, path) {
             cur = cur[index];
           }
         } else {
-          break;
+          if (isArray(cur) && isNumber(index) && index >= 0 && index < cur.length) {
+            cur = cur[index];
+          } else {
+            break;
+          }
         }
       }
     } catch (err) {

@@ -191,7 +191,7 @@ const similars = function (objA, objB) {
 }
 
 const queryObject = (obj, path) => {
-	if (isSomeObject(obj) && isSomeString(path)) {
+	if ((isSomeObject(obj) || isSomeArray(obj)) && isSomeString(path)) {
 		const arr = path.split('.')
 		let cur = obj
 
@@ -204,7 +204,7 @@ const queryObject = (obj, path) => {
 			let index;
 			let propName;
 
-			if (openBracketIndex > 0) {
+			if (openBracketIndex >= 0) {
 				const closeBracketIndex = prop.indexOf(']', openBracketIndex);
 
 				if (closeBracketIndex > 0) {
@@ -218,7 +218,7 @@ const queryObject = (obj, path) => {
 			} else {
 				propName = prop
 			}
-
+			
 			if (propName) {
 				cur = cur[propName]
 
@@ -226,7 +226,11 @@ const queryObject = (obj, path) => {
 					cur = cur[index]
 				}
 			} else {
-				break;
+				if (isArray(cur) && isNumber(index) && index >= 0 && index < cur.length) {
+					cur = cur[index]
+				} else {
+					break;
+				}
 			}
 		}
 

@@ -1,6 +1,6 @@
 {
   "name": "@locustjs/base",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "This library contains basic type checking functions",
   "main": "index.cjs.js",
   "module": "index.esm.js",

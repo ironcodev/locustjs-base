@@ -45,4 +45,20 @@ describe("locustjs-base test suite: testing queryObject", function () {
       locust.queryObject({ a: [10, { b: [{ c: "test" }] }] }, "a[1].b[0].c")
     ).toBe("test");
   });
+
+  it(`queryObject([])`, function () {
+    expect(locust.queryObject([])).toBe(undefined);
+  });
+
+  it(`queryObject([], '[0]')`, function () {
+    expect(locust.queryObject([], "[0]")).toBe(undefined);
+  });
+
+  it(`queryObject([10], '[0]')`, function () {
+    expect(locust.queryObject([10], "[0]")).toBe(10);
+  });
+
+  it(`queryObject([{ a: 10 }], '[0].a')`, function () {
+    expect(locust.queryObject([{ a: 10 }], "[0].a")).toBe(10);
+  });
 });
