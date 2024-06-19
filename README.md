@@ -593,7 +593,7 @@ equals({ a: 10, b: [20, {c: 30}] }, { a: 10, b: ['20', {c: '30'}] }, true) // fa
 
 ```
 
-## `queryObject(obj: any, path: string): any`
+## `query(obj: any, path: string): any`
 This function reads a value from an object.
 
 ```javascript
@@ -626,12 +626,12 @@ const obj = {
     }
 }
 
-queryObject(obj, 'name')    // ali
-queryObject(obj, 'address.id')    // 123
-queryObject(obj, 'address.city.name')    // tehran
-queryObject(obj, 'marks[2]')    // 18.25
-queryObject(obj, 'locations[2].name')    // work
-queryObject(obj, 'points.likes[0].source.page.tags[1]')    // mars
+query(obj, 'name')    // ali
+query(obj, 'address.id')    // 123
+query(obj, 'address.city.name')    // tehran
+query(obj, 'marks[2]')    // 18.25
+query(obj, 'locations[2].name')    // work
+query(obj, 'points.likes[0].source.page.tags[1]')    // mars
 ```
 
 ## `ConversionBase`

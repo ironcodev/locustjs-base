@@ -190,7 +190,7 @@ const similars = function (objA, objB) {
 	return true;
 }
 
-const queryObject = (obj, path) => {
+const query = (obj, path) => {
 	if ((isSomeObject(obj) || isSomeArray(obj)) && isSomeString(path)) {
 		const arr = path.split('.')
 		let cur = obj
@@ -251,6 +251,9 @@ class ConversionBase {
 	toDate(x) {
 		throw `${this.name}.toDate() is not implemented`
 	}
+	toString(x) {
+		throw `${this.name}.toString() is not implemented`
+	}
 }
 
 class ConversionDefault extends ConversionBase {
@@ -291,6 +294,13 @@ class ConversionDefault extends ConversionBase {
 
 		return defaultValue
 	}
+	toString(x) {
+		if (isNullOrEmpty(x)) {
+			return ''
+		}
+
+		return x.toString();
+	}
 }
 
 let convert = new ConversionDefault()
@@ -313,6 +323,9 @@ class Convert {
 	}
 	static toDate(x) {
 		return convert.toDate(x)
+	}
+	static toString(x) {
+		return convert.toString(x)
 	}
 }
 
@@ -350,7 +363,7 @@ export {
 	forEach,
 	equals,
 	//similars,	=> not ready yet
-	queryObject,
+	query,
 	ConversionBase,
 	ConversionDefault,
 	Convert

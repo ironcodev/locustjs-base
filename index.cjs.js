@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.queryObject = exports.isjQueryElement = exports.isaN = exports.isUndefined = exports.isSubClassOf = exports.isString = exports.isSomething = exports.isSomeString = exports.isSomeObject = exports.isSomeNumber = exports.isSomeArray = exports.isPrimitive = exports.isObject = exports.isNumeric = exports.isNumber = exports.isNullOrEmpty = exports.isNull = exports.isNamespace = exports.isIterable = exports.isInteger = exports.isFunction = exports.isFormatedDate = exports.isFloat = exports.isEmpty = exports.isDate = exports.isBool = exports.isBasic = exports.isArray = exports.isAnObject = exports.hasDate = exports.hasBool = exports.forEach = exports.equals = exports.Convert = exports.ConversionDefault = exports.ConversionBase = void 0;
+exports.query = exports.isjQueryElement = exports.isaN = exports.isUndefined = exports.isSubClassOf = exports.isString = exports.isSomething = exports.isSomeString = exports.isSomeObject = exports.isSomeNumber = exports.isSomeArray = exports.isPrimitive = exports.isObject = exports.isNumeric = exports.isNumber = exports.isNullOrEmpty = exports.isNull = exports.isNamespace = exports.isIterable = exports.isInteger = exports.isFunction = exports.isFormatedDate = exports.isFloat = exports.isEmpty = exports.isDate = exports.isBool = exports.isBasic = exports.isArray = exports.isAnObject = exports.hasDate = exports.hasBool = exports.forEach = exports.equals = exports.Convert = exports.ConversionDefault = exports.ConversionBase = void 0;
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
@@ -271,7 +271,7 @@ var similars = function similars(objA, objB) {
   }
   return true;
 };
-var queryObject = function queryObject(obj, path) {
+var query = function query(obj, path) {
   if ((isSomeObject(obj) || isSomeArray(obj)) && isSomeString(path)) {
     var arr = path.split('.');
     var cur = obj;
@@ -319,7 +319,7 @@ var queryObject = function queryObject(obj, path) {
     return cur;
   }
 };
-exports.queryObject = queryObject;
+exports.query = query;
 var ConversionBase = /*#__PURE__*/function () {
   function ConversionBase() {
     _classCallCheck(this, ConversionBase);
@@ -343,6 +343,11 @@ var ConversionBase = /*#__PURE__*/function () {
     key: "toDate",
     value: function toDate(x) {
       throw "".concat(this.name, ".toDate() is not implemented");
+    }
+  }, {
+    key: "toString",
+    value: function toString(x) {
+      throw "".concat(this.name, ".toString() is not implemented");
     }
   }]);
   return ConversionBase;
@@ -395,6 +400,14 @@ var ConversionDefault = /*#__PURE__*/function (_ConversionBase) {
       }
       return defaultValue;
     }
+  }, {
+    key: "toString",
+    value: function toString(x) {
+      if (isNullOrEmpty(x)) {
+        return '';
+      }
+      return x.toString();
+    }
   }]);
   return ConversionDefault;
 }(ConversionBase);
@@ -429,6 +442,11 @@ var Convert = /*#__PURE__*/function () {
     key: "toDate",
     value: function toDate(x) {
       return convert.toDate(x);
+    }
+  }, {
+    key: "toString",
+    value: function toString(x) {
+      return convert.toString(x);
     }
   }]);
   return Convert;
