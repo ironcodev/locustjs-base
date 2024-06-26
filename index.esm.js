@@ -364,6 +364,7 @@ export {
 	equals,
 	//similars,	=> not ready yet
 	query,
+	convert,
 	ConversionBase,
 	ConversionDefault,
 	Convert

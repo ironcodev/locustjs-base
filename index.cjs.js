@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.query = exports.isjQueryElement = exports.isaN = exports.isUndefined = exports.isSubClassOf = exports.isString = exports.isSomething = exports.isSomeString = exports.isSomeObject = exports.isSomeNumber = exports.isSomeArray = exports.isPrimitive = exports.isObject = exports.isNumeric = exports.isNumber = exports.isNullOrEmpty = exports.isNull = exports.isNamespace = exports.isIterable = exports.isInteger = exports.isFunction = exports.isFormatedDate = exports.isFloat = exports.isEmpty = exports.isDate = exports.isBool = exports.isBasic = exports.isArray = exports.isAnObject = exports.hasDate = exports.hasBool = exports.forEach = exports.equals = exports.Convert = exports.ConversionDefault = exports.ConversionBase = void 0;
+exports.query = exports.isjQueryElement = exports.isaN = exports.isUndefined = exports.isSubClassOf = exports.isString = exports.isSomething = exports.isSomeString = exports.isSomeObject = exports.isSomeNumber = exports.isSomeArray = exports.isPrimitive = exports.isObject = exports.isNumeric = exports.isNumber = exports.isNullOrEmpty = exports.isNull = exports.isNamespace = exports.isIterable = exports.isInteger = exports.isFunction = exports.isFormatedDate = exports.isFloat = exports.isEmpty = exports.isDate = exports.isBool = exports.isBasic = exports.isArray = exports.isAnObject = exports.hasDate = exports.hasBool = exports.forEach = exports.equals = exports.convert = exports.Convert = exports.ConversionDefault = exports.ConversionBase = void 0;
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
@@ -413,6 +413,7 @@ var ConversionDefault = /*#__PURE__*/function (_ConversionBase) {
 }(ConversionBase);
 exports.ConversionDefault = ConversionDefault;
 var convert = new ConversionDefault();
+exports.convert = convert;
 var Convert = /*#__PURE__*/function () {
   function Convert() {
     _classCallCheck(this, Convert);
@@ -426,7 +427,7 @@ var Convert = /*#__PURE__*/function () {
       if (!(x instanceof ConversionBase)) {
         throw "input type must be a subclass of ConversionBase";
       }
-      convert = x;
+      exports.convert = convert = x;
     }
   }, {
     key: "toBool",
