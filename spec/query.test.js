@@ -14,8 +14,28 @@ describe("locustjs-base test suite: testing query", function () {
     expect(locust.query(23)).toBe(undefined);
   });
 
+  it(`query(23, 'a')`, function () {
+    expect(locust.query(23, 'a')).toBe(undefined);
+  });
+
+  it(`query(23, '[0])`, function () {
+    expect(locust.query(23, '[0]')).toBe(undefined);
+  });
+
   it(`query('')`, function () {
     expect(locust.query("")).toBe(undefined);
+  });
+
+  it(`query('abc')`, function () {
+    expect(locust.query('abc')).toBe(undefined);
+  });
+
+  it(`query('abc', 'a')`, function () {
+    expect(locust.query('abc', 'a')).toBe(undefined);
+  });
+
+  it(`query('abc', '[0]')`, function () {
+    expect(locust.query('abc', '[0]')).toBe(undefined);
   });
 
   it(`query({}, 'a')`, function () {
@@ -31,9 +51,7 @@ describe("locustjs-base test suite: testing query", function () {
   });
 
   it(`query({ a: 10, b: { name: 'ali' } }, 'b.name')`, function () {
-    expect(locust.query({ a: 10, b: { name: "ali" } }, "b.name")).toBe(
-      "ali"
-    );
+    expect(locust.query({ a: 10, b: { name: "ali" } }, "b.name")).toBe("ali");
   });
 
   it(`query({ a: [10, 20] }, 'a[1]')`, function () {
@@ -60,5 +78,9 @@ describe("locustjs-base test suite: testing query", function () {
 
   it(`query([{ a: 10 }], '[0].a')`, function () {
     expect(locust.query([{ a: 10 }], "[0].a")).toBe(10);
+  });
+
+  it(`query([10], '[1]')`, function () {
+    expect(locust.query([10], "[1]")).toBe(undefined);
   });
 });

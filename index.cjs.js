@@ -307,6 +307,7 @@ var query = function query(obj, path) {
           if (isArray(cur) && isNumber(index) && index >= 0 && index < cur.length) {
             cur = cur[index];
           } else {
+            cur = undefined;
             break;
           }
         }
