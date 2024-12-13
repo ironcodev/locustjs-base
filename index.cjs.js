@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.query = exports.isjQueryElement = exports.isaN = exports.isUndefined = exports.isSubClassOf = exports.isString = exports.isSomething = exports.isSomeString = exports.isSomeObject = exports.isSomeNumber = exports.isSomeArray = exports.isPrimitive = exports.isObject = exports.isNumeric = exports.isNumber = exports.isNullOrEmpty = exports.isNull = exports.isNamespace = exports.isIterable = exports.isInteger = exports.isFunction = exports.isFormatedDate = exports.isFloat = exports.isEmpty = exports.isDate = exports.isBool = exports.isBasic = exports.isArray = exports.isAnObject = exports.hasDate = exports.hasBool = exports.forEach = exports.equals = exports.convert = exports.Convert = exports.ConversionDefault = exports.ConversionBase = void 0;
+exports.set = exports.query = exports.isjQueryElement = exports.isaN = exports.isUndefined = exports.isSubClassOf = exports.isString = exports.isSomething = exports.isSomeString = exports.isSomeObject = exports.isSomeNumber = exports.isSomeArray = exports.isPrimitive = exports.isObject = exports.isNumeric = exports.isNumber = exports.isNullOrEmpty = exports.isNull = exports.isNamespace = exports.isIterable = exports.isInteger = exports.isFunction = exports.isFormatedDate = exports.isFloat = exports.isEmpty = exports.isDate = exports.isBool = exports.isBasic = exports.isArray = exports.isAnObject = exports.hasDate = exports.hasBool = exports.forEach = exports.equals = exports.convert = exports.Convert = exports.ConversionDefault = exports.ConversionBase = void 0;
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
@@ -321,6 +321,29 @@ var query = function query(obj, path) {
   }
 };
 exports.query = query;
+var set = function set(obj, path, value) {
+  if (isObject(obj) && isSomeString(path)) {
+    var current = obj;
+    var parts = path.split(".").map(function (x) {
+      return x.trim();
+    }).filter(function (x) {
+      return !isEmpty(x);
+    });
+    for (var i = 0; i < parts.length; i++) {
+      var part = parts[i];
+      if (!isObject(current[part])) {
+        if (i == parts.length - 1) {
+          current[part] = value;
+          break;
+        }
+        current[part] = {};
+      }
+      current = current[part];
+    }
+  }
+  return obj;
+};
+exports.set = set;
 var ConversionBase = /*#__PURE__*/function () {
   function ConversionBase() {
     _classCallCheck(this, ConversionBase);

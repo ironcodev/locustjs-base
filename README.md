@@ -634,6 +634,16 @@ query(obj, 'locations[2].name')    // work
 query(obj, 'points.likes[0].source.page.tags[1]')    // mars
 ```
 
+## `set(obj: any, path: string, value: any): object`
+This function sets a value on an object based on a given property path. The source object is affected.
+
+```javascript
+const obj = { }
+
+set(obj, 'a', 10)    // obj will be { a: 10 }
+set(obj, 'a.b', true)    // obj will be { a: { b: true } }
+```
+
 ## `ConversionBase`
 This is an abstract base class that defines structure of conversion classes.
 

@@ -240,6 +240,33 @@ const query = (obj, path) => {
 	}
 }
 
+const set = (obj, path, value) => {
+	if (isObject(obj) && isSomeString(path)) {
+		let current = obj;
+		const parts = path
+						.split(".")
+						.map((x) => x.trim())
+						.filter((x) => !isEmpty(x));
+
+		for (let i = 0; i < parts.length; i++) {
+			const part = parts[i];
+
+			if (!isObject(current[part])) {
+				if (i == parts.length - 1) {
+					current[part] = value;
+					break;
+				}
+
+				current[part] = {};
+			}
+
+			current = current[part];
+		}
+	}
+
+	return obj;
+};
+
 class ConversionBase {
 	get _name() {
 		return this.constructor.name
@@ -366,6 +393,7 @@ export {
 	equals,
 	//similars,	=> not ready yet
 	query,
+	set,
 	convert,
 	ConversionBase,
 	ConversionDefault,
