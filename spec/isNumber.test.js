@@ -1,4 +1,4 @@
-import * as locust from '../index.esm.js'
+import * as locust from '../src'
 
 // -------------- isNumber -----------------
 describe('locustjs-base test suite: testing isNumber', function() {

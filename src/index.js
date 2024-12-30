@@ -1,38 +1,38 @@
-const isString       = (x, n) => (typeof x == 'string' || x instanceof String) && (n == undefined || x.length == n);
-const isNumber       = (x) => (typeof x == 'number' || x instanceof Number) && !isNaN(x);
-const isDate         = (x) => x instanceof Date && !isNaN(x.valueOf());
-const isBool         = (x) => typeof x == 'boolean' || x instanceof Boolean;
-const isaN      	 = isNumber;
-const isBasic		 = (x) => {
+const isString = (x, n) => (typeof x == 'string' || x instanceof String) && (n == undefined || x.length == n);
+const isNumber = (x) => (typeof x == 'number' || x instanceof Number) && !isNaN(x);
+const isDate = (x) => x instanceof Date && !isNaN(x.valueOf());
+const isBool = (x) => typeof x == 'boolean' || x instanceof Boolean;
+const isaN = isNumber;
+const isBasic = (x) => {
 	const type = typeof x;
 	return type == 'string' || type == 'number' || type == 'boolean' || isDate(x);
 }
-const isPrimitive    = (x) => isString(x) || isNumber(x) || isDate(x) || isBool(x);
-const isNull		 = (x) => x === null;
-const isUndefined	 = (x) => x === undefined;
-const isNullOrEmpty	 = (x) => isNull(x) || isUndefined(x) || (typeof x == 'number' && isNaN(x)) || (isString(x) && x.length == 0);
-const isEmpty        = (x) => isNull(x) || isUndefined(x) || (typeof x == 'number' && isNaN(x)) || (isString(x) && x.trim() == '');
-const isSomeString   = (x) => isString(x) && x.trim() != '';
-const isAnObject     = (x) => typeof x == 'object' && !isNull(x);
-const isObject       = (x) => isAnObject(x) && !isPrimitive(x);
-const isSomething	 = (x) => !isNull(x) && !isUndefined(x) && !(typeof x == 'number' && isNaN(x));
-const isSomeObject   = (x) => isObject(x) && !isArray(x) && Object.keys(x).length > 0;
-const isFunction     = (x) => typeof x == 'function' && typeof x.nodeType !== 'number';
-const isNumeric      = (x) => (isSomeString(x) || isNumber(x)) && !isNaN(x - parseFloat(x));	// borrowed from jQuery
-const isInteger		 = Number.isInteger;
-const isFloat		 = (x) => isNumeric(x) && (Math.floor(x) - x) != 0;
-const isSomeNumber	 = (x) => isNumeric(x) && x != 0;
+const isPrimitive = (x) => isString(x) || isNumber(x) || isDate(x) || isBool(x);
+const isNull = (x) => x === null;
+const isUndefined = (x) => x === undefined;
+const isNullOrEmpty = (x) => isNull(x) || isUndefined(x) || (typeof x == 'number' && isNaN(x)) || (isString(x) && x.length == 0);
+const isEmpty = (x) => isNull(x) || isUndefined(x) || (typeof x == 'number' && isNaN(x)) || (isString(x) && x.trim() == '');
+const isSomeString = (x) => isString(x) && x.trim() != '';
+const isAnObject = (x) => typeof x == 'object' && !isNull(x);
+const isObject = (x) => isAnObject(x) && !isPrimitive(x);
+const isSomething = (x) => !isNull(x) && !isUndefined(x) && !(typeof x == 'number' && isNaN(x));
+const isSomeObject = (x) => isObject(x) && !isArray(x) && Object.keys(x).length > 0;
+const isFunction = (x) => typeof x == 'function' && typeof x.nodeType !== 'number';
+const isNumeric = (x) => (isSomeString(x) || isNumber(x)) && !isNaN(x - parseFloat(x));	// borrowed from jQuery
+const isInteger = Number.isInteger;
+const isFloat = (x) => isNumeric(x) && (Math.floor(x) - x) != 0;
+const isSomeNumber = (x) => isNumeric(x) && x != 0;
 const isjQueryElement = (x) => isObject(x) && isSomeString(x.jquery);
-const hasDate        = (x) => (isDate(x) || isString(x) || isNumber(x)) && !isNaN(Date.parse(x));
-const hasBool		 = (x, ignoreCase = true) => isBool(x) || (isSomeString(x) && ['true', 'false'].indexOf(ignoreCase ? x.trim().toLowerCase(): x.trim()) >= 0);
+const hasDate = (x) => (isDate(x) || isString(x) || isNumber(x)) && !isNaN(Date.parse(x));
+const hasBool = (x, ignoreCase = true) => isBool(x) || (isSomeString(x) && ['true', 'false'].indexOf(ignoreCase ? x.trim().toLowerCase() : x.trim()) >= 0);
 const isFormatedDate = (x) => isSomeString(x) && (
-							/^\d{1,4}\.\d{1,4}\.\d{1,4}$/.test(x) ||
-							/^\d{1,4}-\d{1,4}-\d{1,4}$/.test(x) ||
-							/^\d{1,4}\/\d{1,4}\/\d{1,4}$/.test(x) ||
-							/^\d{1,4}\\\d{1,4}\\\d{1,4}$/.test(x)
-						);
-const isArray		 = Array.isArray;
-const isIterable	 = function (x) {	 	// source: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/@@iterator
+	/^\d{1,4}\.\d{1,4}\.\d{1,4}$/.test(x) ||
+	/^\d{1,4}-\d{1,4}-\d{1,4}$/.test(x) ||
+	/^\d{1,4}\/\d{1,4}\/\d{1,4}$/.test(x) ||
+	/^\d{1,4}\\\d{1,4}\\\d{1,4}$/.test(x)
+);
+const isArray = Array.isArray;
+const isIterable = function (x) {	 	// source: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/@@iterator
 	if (!x) {
 		return false;
 	}
@@ -49,20 +49,20 @@ const isIterable	 = function (x) {	 	// source: https://developer.mozilla.org/en
 
 	return false;
 };
-const isSomeArray	 = (x) => isArray(x) && x.length > 0;
-const isNamespace	 = (x) => isSomeString(x) && /^[a-zA-Z]\w*(\.[a-zA-Z]\w*)*$/.test(x);
-const isSubClassOf 	 = (child, parent) => child && isFunction(parent) && (child === parent || child.prototype instanceof parent);
-const forEach		 = (x, callback) => {
+const isSomeArray = (x) => isArray(x) && x.length > 0;
+const isNamespace = (x) => isSomeString(x) && /^[a-zA-Z]\w*(\.[a-zA-Z]\w*)*$/.test(x);
+const isSubClassOf = (child, parent) => child && isFunction(parent) && (child === parent || child.prototype instanceof parent);
+const forEach = (x, callback) => {
 	let result = [];
-	
+
 	if (isUndefined(callback)) {
-		callback = () => {}
+		callback = () => { }
 	}
 
 	if (!isFunction(callback)) {
 		throw `@locustjs/base: forEach: expected function for callback.`
 	}
-	
+
 	if (!isEmpty(x)) {
 		if (isArray(x)) {
 			for (let i = 0; i < x.length; i++) {
@@ -73,9 +73,9 @@ const forEach		 = (x, callback) => {
 					value: x[i],
 					count: x.length
 				};
-				
+
 				const r = callback(args);
-	
+
 				if (args.break) {
 					break;
 				}
@@ -86,7 +86,7 @@ const forEach		 = (x, callback) => {
 			}
 		} else if (isObject(x)) {
 			const _keys = Object.keys(x);
-	
+
 			for (let i = 0; i < _keys.length; i++) {
 				const args = {
 					source: x,
@@ -95,22 +95,47 @@ const forEach		 = (x, callback) => {
 					value: x[_keys[i]],
 					count: _keys.length
 				};
-				
+
 				const r = callback(args);
 
 				if (args.break) {
 					break;
 				}
-				
+
 				if (!args.skip) {
 					result.push(r || args.result || { index: i, key: _keys[i], value: x[i] });
 				}
 			}
+		} else if (isIterable(x)) {
+			let i = 0;
+
+			for (let item of x) {
+				const args = {
+					source: x,
+					index: i,
+					key: i,
+					value: item,
+					count: undefined
+				};
+
+				const r = callback(args);
+
+				if (args.break) {
+					break;
+				}
+
+				if (!args.skip) {
+					result.push(r || args.result || { index: i, key: i, value: item });
+				}
+
+				i++;
+			}
 		}
 	}
-	
+
 	return result;
 }
+const foreach = forEach;
 
 const equals = function (objA, objB, strict = false) {
 	if (isPrimitive(objA) || isNullOrEmpty(objA) || isFunction(objA)) {
@@ -120,7 +145,7 @@ const equals = function (objA, objB, strict = false) {
 	if (isPrimitive(objB) || isNullOrEmpty(objB) || isFunction(objB)) {
 		return strict ? objA === objB : objA == objB;
 	}
-	
+
 	if (isArray(objA)) {
 		if (isArray(objB) && objA.length == objB.length) {
 			for (let i = 0; i < objA.length; i++) {
@@ -128,26 +153,26 @@ const equals = function (objA, objB, strict = false) {
 					return false;
 				}
 			}
-			
+
 			return true;
 		} else {
 			return false;
 		}
 	}
-	
+
 	const keysA = Object.keys(objA);
 	const keysB = Object.keys(objB);
-	
+
 	if (keysA.length != keysB.length) {
 		return false;
 	}
-	
+
 	for (let key of keysA) {
 		if (!equals(objA[key], objB[key], strict)) {
 			return false;
 		}
 	}
-	
+
 	return true;
 }
 
@@ -156,10 +181,10 @@ const similars = function (objA, objB) {
 		if (isPrimitive(objB)) {
 			return typeof objA == typeof objB;
 		}
-		
+
 		return false;
 	}
-	
+
 	if (isArray(objA)) {
 		if (isArray(objB) && objA.length == objB.length) {
 			for (let i = 0; i < objA.length; i++) {
@@ -167,32 +192,33 @@ const similars = function (objA, objB) {
 					return false;
 				}
 			}
-			
+
 			return true;
 		} else {
 			return false;
 		}
 	}
-	
+
 	const keysA = Object.keys(objA);
 	const keysB = Object.keys(objB);
-	
+
 	if (keysA.length != keysB.length) {
 		return false;
 	}
-	
+
 	for (let key of keysA) {
 		if (!similars(objA[key], objB[key])) {
 			return false;
 		}
 	}
-	
+
 	return true;
 }
 
 const query = (obj, path) => {
 	if ((isSomeObject(obj) || isSomeArray(obj)) && isSomeString(path)) {
 		const arr = path.split('.')
+		let propName;
 		let cur = obj
 
 		for (let prop of arr) {
@@ -200,9 +226,75 @@ const query = (obj, path) => {
 				break
 			}
 
+			let nestedArrays = false;
+
+			do {
+				const openBracketIndex = (propName || prop).indexOf('[')
+				let index;
+
+				if (openBracketIndex >= 0) {
+					const closeBracketIndex = prop.indexOf(']', openBracketIndex);
+
+					if (closeBracketIndex > 0) {
+						index = prop.substr(openBracketIndex + 1, closeBracketIndex - openBracketIndex - 1)
+
+						if (isNumeric(index)) {
+							index = parseInt(index)
+							propName = prop.substr(0, openBracketIndex)
+						}
+					}
+				} else {
+					propName = prop;
+					nestedArrays = false;
+				}
+
+				if (propName) {
+					cur = cur[propName]
+
+					if (isArray(cur) && isNumber(index) && index >= 0 && index < cur.length) {
+						cur = cur[index]
+					}
+				} else {
+					if (isArray(cur) && isNumber(index) && index >= 0 && index < cur.length) {
+						cur = cur[index]
+					} else {
+						cur = undefined;
+
+						break;
+					}
+				}
+			} while (nestedArrays);
+		}
+
+		return cur;
+	}
+}
+
+const set = (obj, path, value) => {
+	if ((isSomeObject(obj) || isSomeArray(obj)) && isSomeString(path)) {
+		const arr = path.split('.')
+		let cur = obj
+		let prev = cur;
+		let propName;
+		let index;
+		let i = 0;
+
+		for (let prop of arr) {
+			if (cur == undefined) {
+				if (isArray(prev)) {
+					if (i < arr.length) {
+
+					}
+				} else {
+					if (propName) {
+						prev[propName] = {}
+					}
+				}
+
+				break
+			}
+
 			const openBracketIndex = prop.indexOf('[')
-			let index;
-			let propName;
 
 			if (openBracketIndex >= 0) {
 				const closeBracketIndex = prop.indexOf(']', openBracketIndex);
@@ -218,49 +310,42 @@ const query = (obj, path) => {
 			} else {
 				propName = prop
 			}
-			
+
 			if (propName) {
+				prev = cur;
+
 				cur = cur[propName]
 
 				if (isArray(cur) && isNumber(index) && index >= 0 && index < cur.length) {
+					prev = cur;
+
 					cur = cur[index]
 				}
 			} else {
+				prev = cur;
+
 				if (isArray(cur) && isNumber(index) && index >= 0 && index < cur.length) {
 					cur = cur[index]
 				} else {
 					cur = undefined;
-					
+
 					break;
 				}
 			}
+
+			i++;
 		}
 
-		return cur;
-	}
-}
-
-const set = (obj, path, value) => {
-	if (isObject(obj) && isSomeString(path)) {
-		let current = obj;
-		const parts = path
-						.split(".")
-						.map((x) => x.trim())
-						.filter((x) => !isEmpty(x));
-
-		for (let i = 0; i < parts.length; i++) {
-			const part = parts[i];
-
-			if (!isObject(current[part])) {
-				if (i == parts.length - 1) {
-					current[part] = value;
-					break;
+		if (i == arr.length) {
+			if (prev) {
+				if (isArray(prev)) {
+					if (isNumber(index) && index >= 0 && index < prev.length) {
+						prev[index] = value
+					}
+				} else {
+					prev[propName] = value;
 				}
-
-				current[part] = {};
 			}
-
-			current = current[part];
 		}
 	}
 
@@ -291,7 +376,7 @@ class ConversionDefault extends ConversionBase {
 			if (isBool(x)) {
 				return x;
 			}
-			
+
 			return x.trim().toLowerCase() == 'true';
 		}
 		if (isSomeNumber(x)) {
@@ -332,7 +417,8 @@ class ConversionDefault extends ConversionBase {
 	}
 }
 
-let convert = new ConversionDefault()
+let convert = new ConversionDefault();
+
 class Convert {
 	static get instance() {
 		return convert;
@@ -390,6 +476,7 @@ export {
 	isNamespace,
 	isSubClassOf,
 	forEach,
+	foreach,
 	equals,
 	//similars,	=> not ready yet
 	query,

@@ -6,6 +6,11 @@ This library contains type checking functions and a few general utilities.
 npm i @locustjs/base
 ```
 
+## Current Version
+```
+4.2.1
+```
+
 # Import
 
 CommonJs
@@ -51,6 +56,10 @@ import { someFn } from '@locustjs/base'
 | `isSomeArray(arg: any)` | returns `true` if `arg` is a non-empty array , otherwise returns `false` |
 | `isNamespace(arg: any)` | returns `true` if `arg` is a namespace string, i.e. an string starting and ending with a letter and containing only letter/digit or underscore, otherwise returns `false` |
 | `isSubClassOf(child, parent)` | returns `true` if `child` is sub-class of `parent`, otherwise returns `false` |
+| `forEach(x, callback)` | iterates over an array, an object or an iterable list, invokes `callback` passing it each value and at the end returns list of callback results. |
+| `query(object, path)` | queries over `object` based on the given `path` in string. |
+| `set(object, path, value)` | sets value of the given `path` in the given `object`. |
+| `equals(a, b, strict = false)` | checks whether the two arguments are equal in loose mode or strict mode based on the boolean `strict` argument. |
 
 # Examples
 ## `isString(x: any): boolean`
@@ -553,8 +562,8 @@ const querystring = forEach(obj, (args) => {
 console.log(querystring)     // name=ali&age=23&sex=true&phone=22334455
 ```
 
-## `equals(objA: any, objB: any, strict: boolean): boolean`
-This function checks whether `objA` and `objB` are equal or not. Comparison can be done `strict` or `loose`.
+## `equals(a: any, b: any, strict: boolean): boolean`
+This function checks whether `a` and `b` are equal or not. Comparison can be done `strict` or `loose`.
 
 ```javascript
 // loose comparison: strict = false

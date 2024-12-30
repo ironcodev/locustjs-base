@@ -1,4 +1,4 @@
-import * as locust from "../index.esm.js";
+import * as locust from "../src";
 
 // -------------- query -----------------
 describe("locustjs-base test suite: testing query", function () {

@@ -1,12 +1,12 @@
 {
   "name": "@locustjs/base",
-  "version": "4.2.0",
-  "description": "This library contains basic type checking functions",
-  "main": "index.cjs.js",
-  "module": "index.esm.js",
+  "version": "4.2.1",
+  "description": "This library contains basic utilities and type checking functions",
+  "main": "dist/index.js",
+  "module": "src/index.js",
   "scripts": {
-    "build": "babel index.esm.js -o index.cjs.js",
-    "test": "babel-node test-run.js"
+    "build": "rollup -c",
+    "test": "node -r esm test-run.js"
   },
   "repository": {
     "type": "git",
@@ -23,11 +23,8 @@
   },
   "homepage": "https://github.com/ironcodev/locustjs-base#readme",
   "devDependencies": {
-    "@babel/cli": "^7.8.4",
-    "@babel/core": "^7.9.6",
-    "@babel/node": "^7.8.7",
-    "@babel/preset-env": "^7.9.6",
+    "esm": "^3.2.25",
     "jasmine": "^3.5.0",
-    "util.promisify": "^1.0.1"
+    "rollup": "^4.29.1"
   }
 }

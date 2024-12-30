@@ -1,4 +1,4 @@
-import * as locust from "../index.esm.js";
+import * as locust from "../src";
 
 // -------------- isEmpty -----------------
 describe("@locustjs/base test suite: testing equals()", function () {

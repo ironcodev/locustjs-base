@@ -1,4 +1,4 @@
-import { forEach } from '../index.esm.js'
+import { forEach } from '../src'
 
 // -------------- forEach -----------------
 describe('locustjs-base test suite: testing forEach', function() {
