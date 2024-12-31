@@ -215,6 +215,67 @@ const similars = function (objA, objB) {
 	return true;
 }
 
+function extractPropAndIndexes(prop) {
+	let propName;
+	let error;
+	let start = 0;
+	let indexes = []
+	let i = 0;
+	let openBracketIndex = -1;
+	let closeBracketIndex = -1;
+
+	do {
+		openBracketIndex = prop.indexOf('[', start)
+
+		if (openBracketIndex >= 0) {
+			propName = prop.substr(0, openBracketIndex);
+
+			let index;
+			closeBracketIndex = prop.indexOf(']', openBracketIndex);
+
+			if (closeBracketIndex > 0) {
+				index = prop.substr(openBracketIndex + 1, closeBracketIndex - openBracketIndex - 1)
+
+				if (isEmpty(index)) {
+					error = { index: i, err: 1, msg: 'no index' };	// no index
+				} else {
+					if (isNumeric(index)) {
+						index = parseInt(index)
+						indexes.push(index);
+					} else {
+						error = { index: i, err: 2, msg: 'invalid index' };	// invalid index
+					}
+				}
+			} else {
+				error = { err: 3, msg: 'missing closing bracket' };	// mising closing bracket
+			}
+
+			i++;
+			start = closeBracketIndex + 1;
+		} else {
+			if (!propName) {
+				propName = prop;
+			}
+
+			break;
+		}
+
+		if (error) {
+			break;
+		}
+	} while (true);
+
+	if (openBracketIndex >= 0 && closeBracketIndex != prop.length - 1 && !error) {
+		error = { err: 4, msg: 'extra characters after last ]' };	// extra characters after last ]
+	}
+
+	return {
+		propName,
+		indexes,
+		error
+	}
+}
+
 const query = (obj, path) => {
 	if ((isSomeObject(obj) || isSomeArray(obj)) && isSomeString(path)) {
 		const arr = path.split('.')
