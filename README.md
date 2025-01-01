@@ -632,15 +632,36 @@ const obj = {
                 }
             }
         ]
-    }
+    },
+    data: [
+        [
+            ['code', '1234'],
+            ['active', true],
+        ],
+        [100, 101, 102, 103],
+        [
+            [
+                { page: 324, from: 200, to: 300 }
+            ],
+            {
+                form: 'frm-filter',
+                checks: [11, 15, 8]
+            }
+        ]
+    ]
 }
 
 query(obj, 'name')    // ali
 query(obj, 'address.id')    // 123
 query(obj, 'address.city.name')    // tehran
-query(obj, 'marks[2]')    // 18.25
-query(obj, 'locations[2].name')    // work
+query(obj, 'marks[2]')    // 15
+query(obj, 'locations[1].name')    // work
 query(obj, 'points.likes[0].source.page.tags[1]')    // mars
+query(obj, 'data[0][1][0]')    // active
+query(obj, 'data[1][12]')    // undefined
+query(obj, 'data[1][2]')    // 102
+query(obj, 'data[2][0][0].page')    // 324
+query(obj, 'data[2][1].checks[1]')    // 15
 ```
 
 ## `set(obj: any, path: string, value: any): object`

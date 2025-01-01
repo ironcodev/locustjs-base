@@ -228,7 +228,9 @@ function extractPropAndIndexes(prop) {
 		openBracketIndex = prop.indexOf('[', start)
 
 		if (openBracketIndex >= 0) {
-			propName = prop.substr(0, openBracketIndex);
+			if (!propName) {
+				propName = prop.substr(0, openBracketIndex);
+			}
 
 			let index;
 			closeBracketIndex = prop.indexOf(']', openBracketIndex);
@@ -237,17 +239,17 @@ function extractPropAndIndexes(prop) {
 				index = prop.substr(openBracketIndex + 1, closeBracketIndex - openBracketIndex - 1)
 
 				if (isEmpty(index)) {
-					error = { index: i, err: 1, msg: 'no index' };	// no index
+					error = { index: i, err: 1, msg: 'no index' };
 				} else {
 					if (isNumeric(index)) {
 						index = parseInt(index)
 						indexes.push(index);
 					} else {
-						error = { index: i, err: 2, msg: 'invalid index' };	// invalid index
+						error = { index: i, err: 2, msg: 'invalid index' };
 					}
 				}
 			} else {
-				error = { err: 3, msg: 'missing closing bracket' };	// mising closing bracket
+				error = { err: 3, msg: 'missing closing bracket' };
 			}
 
 			i++;
@@ -265,8 +267,8 @@ function extractPropAndIndexes(prop) {
 		}
 	} while (true);
 
-	if (openBracketIndex >= 0 && closeBracketIndex != prop.length - 1 && !error) {
-		error = { err: 4, msg: 'extra characters after last ]' };	// extra characters after last ]
+	if (indexes.length > 0 && closeBracketIndex != prop.length - 1 && !error) {
+		error = { err: 4, msg: 'extra characters after last ]' };
 	}
 
 	return {
@@ -279,7 +281,6 @@ function extractPropAndIndexes(prop) {
 const query = (obj, path) => {
 	if ((isSomeObject(obj) || isSomeArray(obj)) && isSomeString(path)) {
 		const arr = path.split('.')
-		let propName;
 		let cur = obj
 
 		for (let prop of arr) {
@@ -287,51 +288,80 @@ const query = (obj, path) => {
 				break
 			}
 
-			let nestedArrays = false;
+			const parts = extractPropAndIndexes(prop);
 
-			do {
-				const openBracketIndex = (propName || prop).indexOf('[')
-				let index;
+			if (parts.error) {
+				throw `index: ${parts.error.index}, ${parts.error.msg}`
+			}
 
-				if (openBracketIndex >= 0) {
-					const closeBracketIndex = prop.indexOf(']', openBracketIndex);
+			const propName = parts.propName;
+			cur = cur[propName]
 
-					if (closeBracketIndex > 0) {
-						index = prop.substr(openBracketIndex + 1, closeBracketIndex - openBracketIndex - 1)
+			if (cur == undefined) {
+				break
+			}
 
-						if (isNumeric(index)) {
-							index = parseInt(index)
-							propName = prop.substr(0, openBracketIndex)
-						}
-					}
-				} else {
-					propName = prop;
-					nestedArrays = false;
+			for (let index of parts.indexes) {
+				cur = cur[index]
+
+				if (cur == undefined) {
+					break
 				}
-
-				if (propName) {
-					cur = cur[propName]
-
-					if (isArray(cur) && isNumber(index) && index >= 0 && index < cur.length) {
-						cur = cur[index]
-					}
-				} else {
-					if (isArray(cur) && isNumber(index) && index >= 0 && index < cur.length) {
-						cur = cur[index]
-					} else {
-						cur = undefined;
-
-						break;
-					}
-				}
-			} while (nestedArrays);
+			}
 		}
 
 		return cur;
 	}
 }
-
 const set = (obj, path, value) => {
+	if ((isSomeObject(obj) || isSomeArray(obj)) && isSomeString(path)) {
+		const arr = path.split('.')
+		let cur = obj
+		let prev = cur;
+		let i = 0;
+
+		for (let prop of arr) {
+			const parts = extractPropAndIndexes(prop);
+
+			if (parts.error) {
+				throw `index: ${parts.error.index}, ${parts.error.msg}`
+			}
+
+			const propName = parts.propName;
+
+			prev = cur;
+			cur = cur[propName]
+
+			if (cur == undefined) {
+				if (parts.indexes.length) {
+					cur = prev[propName] = []
+				} else {
+					cur = prev[propName] = {}
+				}
+			}
+
+			for (let index of parts.indexes) {
+				prev = cur;
+				cur = cur[index]
+
+				if (cur == undefined) {
+					cur = []
+					prev.push(cur)
+				}
+			}
+
+			i++;
+		}
+
+		if (i == arr.length) {
+			prev[propName] = value;
+		}
+	}
+
+	return obj;
+};
+
+const set1 = (obj, path, value) => {
 	if ((isSomeObject(obj) || isSomeArray(obj)) && isSomeString(path)) {
 		const arr = path.split('.')
 		let cur = obj
