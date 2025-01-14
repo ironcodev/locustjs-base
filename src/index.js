@@ -314,11 +314,13 @@ const query = (obj, path) => {
 	}
 }
 const set = (obj, path, value) => {
-	if ((isSomeObject(obj) || isSomeArray(obj)) && isSomeString(path)) {
+	if ((isObject(obj) || isArray(obj)) && isSomeString(path)) {
 		const arr = path.split('.')
 		let cur = obj
 		let prev = cur;
 		let i = 0;
+		let propName;
+		let index;
 
 		for (let prop of arr) {
 			const parts = extractPropAndIndexes(prop);
@@ -327,10 +329,16 @@ const set = (obj, path, value) => {
 				throw `index: ${parts.error.index}, ${parts.error.msg}`
 			}
 
-			const propName = parts.propName;
+			propName = parts.propName;
 
+			if (propName && !isObject(cur)) {
+				cur = prev[arr[i - 1]] = {}
+			}
+			
 			prev = cur;
 			cur = cur[propName]
+
+			index = undefined;
 
 			if (cur == undefined) {
 				if (parts.indexes.length) {
@@ -340,21 +348,36 @@ const set = (obj, path, value) => {
 				}
 			}
 
-			for (let index of parts.indexes) {
+			if (parts.indexes.length) {
+				propName = '';
+			}
+			
+			let pi = 0;
+
+			for (index of parts.indexes) {
 				prev = cur;
 				cur = cur[index]
 
 				if (cur == undefined) {
-					cur = []
-					prev.push(cur)
+					if (pi == parts.indexes.length - 1) {
+						cur = prev[index] = {}
+					} else {
+						cur = prev[index] = []
+					}
 				}
+
+				pi++;
 			}
 
 			i++;
 		}
 
 		if (i == arr.length) {
-			prev[propName] = value;
+			if (propName) {
+				prev[propName] = value;
+			} else if (index != undefined) {
+				prev[index] = value;
+			}
 		}
 	}
 
