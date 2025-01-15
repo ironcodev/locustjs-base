@@ -316,6 +316,7 @@ const query = (obj, path) => {
 const set = (obj, path, value) => {
 	if ((isObject(obj) || isArray(obj)) && isSomeString(path)) {
 		const arr = path.split('.')
+		const props = []
 		let cur = obj
 		let prev = cur;
 		let i = 0;
@@ -324,6 +325,8 @@ const set = (obj, path, value) => {
 
 		for (let prop of arr) {
 			const parts = extractPropAndIndexes(prop);
+			
+			props.push(propName);
 
 			if (parts.error) {
 				throw `index: ${parts.error.index}, ${parts.error.msg}`
@@ -331,8 +334,8 @@ const set = (obj, path, value) => {
 
 			propName = parts.propName;
 
-			if (propName && !isObject(cur)) {
-				cur = prev[arr[i - 1]] = {}
+			if (propName && (!isObject(cur) || isArray(cur))) {
+				cur = prev[props[i - 1]] = {}
 			}
 			
 			prev = cur;
@@ -355,6 +358,10 @@ const set = (obj, path, value) => {
 			let pi = 0;
 
 			for (index of parts.indexes) {
+				// if (!isArray(cur)) {
+				// 	cur = prev[parts.indexes[pi - 1]] = []
+				// }
+
 				prev = cur;
 				cur = cur[index]
 
