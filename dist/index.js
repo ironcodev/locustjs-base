@@ -16,9 +16,9 @@ const isNullOrEmpty = (x) => isNull(x) || isUndefined(x) || (typeof x == 'number
 const isEmpty = (x) => isNull(x) || isUndefined(x) || (typeof x == 'number' && isNaN(x)) || (isString(x) && x.trim() == '');
 const isSomeString = (x) => isString(x) && x.trim() != '';
 const isAnObject = (x) => typeof x == 'object' && !isNull(x);
-const isObject = (x) => isAnObject(x) && !isPrimitive(x);
+const isObject = (x) => isAnObject(x) && !isPrimitive(x) && !isArray(x);
 const isSomething = (x) => !isNull(x) && !isUndefined(x) && !(typeof x == 'number' && isNaN(x));
-const isSomeObject = (x) => isObject(x) && !isArray(x) && Object.keys(x).length > 0;
+const isSomeObject = (x) => isObject(x) && Object.keys(x).length > 0;
 const isFunction = (x) => typeof x == 'function' && typeof x.nodeType !== 'number';
 const isNumeric = (x) => (isSomeString(x) || isNumber(x)) && !isNaN(x - parseFloat(x));	// borrowed from jQuery
 const isInteger = Number.isInteger;
@@ -178,6 +178,69 @@ const equals = function (objA, objB, strict = false) {
 	return true;
 };
 
+function extractPropAndIndexes(prop) {
+	let propName;
+	let error;
+	let start = 0;
+	let indexes = [];
+	let i = 0;
+	let openBracketIndex = -1;
+	let closeBracketIndex = -1;
+
+	do {
+		openBracketIndex = prop.indexOf('[', start);
+
+		if (openBracketIndex >= 0) {
+			if (propName == null) {
+				propName = prop.substr(0, openBracketIndex);
+			}
+
+			let index;
+			closeBracketIndex = prop.indexOf(']', openBracketIndex);
+
+			if (closeBracketIndex > 0) {
+				index = prop.substr(openBracketIndex + 1, closeBracketIndex - openBracketIndex - 1);
+
+				if (isEmpty(index)) {
+					error = { index: i, err: 1, msg: 'no index' };
+				} else {
+					if (isNumeric(index)) {
+						index = parseInt(index);
+						indexes.push(index);
+					} else {
+						error = { index: i, err: 2, msg: 'invalid index' };
+					}
+				}
+			} else {
+				error = { err: 3, msg: 'missing closing bracket' };
+			}
+
+			i++;
+			start = closeBracketIndex + 1;
+		} else {
+			if (propName == null) {
+				propName = prop;
+			}
+
+			break;
+		}
+
+		if (error) {
+			break;
+		}
+	} while (true);
+
+	if (indexes.length > 0 && closeBracketIndex != prop.length - 1 && !error) {
+		error = { err: 4, msg: 'extra characters after last ]' };
+	}
+
+	return {
+		propName,
+		indexes,
+		error
+	}
+}
+
 const query = (obj, path) => {
 	if ((isSomeObject(obj) || isSomeArray(obj)) && isSomeString(path)) {
 		const arr = path.split('.');
@@ -188,38 +251,27 @@ const query = (obj, path) => {
 				break
 			}
 
-			const openBracketIndex = prop.indexOf('[');
-			let index;
-			let propName;
+			const parts = extractPropAndIndexes(prop);
 
-			if (openBracketIndex >= 0) {
-				const closeBracketIndex = prop.indexOf(']', openBracketIndex);
+			if (parts.error) {
+				throw `index: ${parts.error.index}, ${parts.error.msg}`
+			}
 
-				if (closeBracketIndex > 0) {
-					index = prop.substr(openBracketIndex + 1, closeBracketIndex - openBracketIndex - 1);
-
-					if (isNumeric(index)) {
-						index = parseInt(index);
-						propName = prop.substr(0, openBracketIndex);
-					}
-				}
-			} else {
-				propName = prop;
+			const propName = parts.propName;
+			
+			if (isObject(cur) && cur[propName] == undefined) {
+				break
 			}
 
 			if (propName) {
 				cur = cur[propName];
+			}
 
-				if (isArray(cur) && isNumber(index) && index >= 0 && index < cur.length) {
-					cur = cur[index];
-				}
-			} else {
-				if (isArray(cur) && isNumber(index) && index >= 0 && index < cur.length) {
-					cur = cur[index];
-				} else {
-					cur = undefined;
+			for (let index of parts.indexes) {
+				cur = cur[index];
 
-					break;
+				if (cur == undefined) {
+					break
 				}
 			}
 		}
@@ -227,73 +279,94 @@ const query = (obj, path) => {
 		return cur;
 	}
 };
-
 const set = (obj, path, value) => {
-	if ((isSomeObject(obj) || isSomeArray(obj)) && isSomeString(path)) {
+	if (isAnObject(obj) && isSomeString(path)) {
 		const arr = path.split('.');
-		let prev = cur = obj;
+		let cur = obj;
+		let prev = cur;
+		let prevProp = '';
+		let i = 0;
 		let propName;
 		let index;
-		let i = 0;
 
 		for (let prop of arr) {
-			if (cur == undefined) {
-				break
+			const parts = extractPropAndIndexes(prop);
+			
+			if (parts.error) {
+				throw `index: ${parts.error.index}, ${parts.error.msg}`
 			}
 
-			const openBracketIndex = prop.indexOf('[');
+			propName = parts.propName;
 
-			if (openBracketIndex >= 0) {
-				const closeBracketIndex = prop.indexOf(']', openBracketIndex);
-
-				if (closeBracketIndex > 0) {
-					index = prop.substr(openBracketIndex + 1, closeBracketIndex - openBracketIndex - 1);
-
-					if (isNumeric(index)) {
-						index = parseInt(index);
-						propName = prop.substr(0, openBracketIndex);
-					}
+			if (propName && !isObject(cur)) {
+				if (index != undefined) {
+					cur = prev[index] = {};
+				} else if (prevProp) {
+					cur = prev[prevProp] = {};
 				}
-			} else {
-				propName = prop;
+			} else if (!propName && parts.indexes.length && !isArray(cur)) {
+				if (index != undefined) {
+					cur = prev[index] = [];
+				} else if (prevProp) {
+					cur = prev[prevProp] = [];
+				}
 			}
+			
+			prev = cur;
 
 			if (propName) {
-				prev = cur;
-
 				cur = cur[propName];
-
-				if (isArray(cur) && isNumber(index) && index >= 0 && index < cur.length) {
-					prev = cur;
-
-					cur = cur[index];
-				}
-			} else {
-				prev = cur;
-
-				if (isArray(cur) && isNumber(index) && index >= 0 && index < cur.length) {
-					prev = cur;
-
-					cur = cur[index];
+	
+				index = undefined;
+	
+				if (cur == undefined) {
+					if (parts.indexes.length) {
+						cur = prev[propName] = [];
+					} else {
+						cur = prev[propName] = {};
+					}
 				} else {
-					cur = undefined;
-
-					break;
+					if (parts.indexes.length && !isArray(cur)) {
+						cur = prev[propName] = [];
+					} else if (!parts.indexes.length && !isObject(cur)) {
+						cur = prev[propName] = {};
+					}
 				}
+			}
+
+			let pi = 0;
+
+			for (index of parts.indexes) {
+				prev = cur;
+				cur = cur[index];
+
+				if (cur == undefined) {
+					if (pi == parts.indexes.length - 1) {
+						cur = prev[index] = {};
+					} else {
+						cur = prev[index] = [];
+					}
+				} else if (pi < parts.indexes.length - 1 && !isArray(cur)) {
+					cur = prev[index] = [];
+				}
+
+				pi++;
 			}
 
 			i++;
+
+			prevProp = propName;
+
+			if (parts.indexes.length) {
+				propName = '';
+			}
 		}
 
 		if (i == arr.length) {
-			if (prev) {
-				if (isArray(prev)) {
-					if (isNumber(index) && index >= 0 && index < prev.length) {
-						prev[index] = value;
-					}
-				} else {
-					prev[propName] = value;
-				}
+			if (propName) {
+				prev[propName] = value;
+			} else if (index != undefined) {
+				prev[index] = value;
 			}
 		}
 	}

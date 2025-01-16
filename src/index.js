@@ -14,9 +14,9 @@ const isNullOrEmpty = (x) => isNull(x) || isUndefined(x) || (typeof x == 'number
 const isEmpty = (x) => isNull(x) || isUndefined(x) || (typeof x == 'number' && isNaN(x)) || (isString(x) && x.trim() == '');
 const isSomeString = (x) => isString(x) && x.trim() != '';
 const isAnObject = (x) => typeof x == 'object' && !isNull(x);
-const isObject = (x) => isAnObject(x) && !isPrimitive(x);
+const isObject = (x) => isAnObject(x) && !isPrimitive(x) && !isArray(x);
 const isSomething = (x) => !isNull(x) && !isUndefined(x) && !(typeof x == 'number' && isNaN(x));
-const isSomeObject = (x) => isObject(x) && !isArray(x) && Object.keys(x).length > 0;
+const isSomeObject = (x) => isObject(x) && Object.keys(x).length > 0;
 const isFunction = (x) => typeof x == 'function' && typeof x.nodeType !== 'number';
 const isNumeric = (x) => (isSomeString(x) || isNumber(x)) && !isNaN(x - parseFloat(x));	// borrowed from jQuery
 const isInteger = Number.isInteger;
@@ -228,7 +228,7 @@ function extractPropAndIndexes(prop) {
 		openBracketIndex = prop.indexOf('[', start)
 
 		if (openBracketIndex >= 0) {
-			if (!propName) {
+			if (propName == null) {
 				propName = prop.substr(0, openBracketIndex);
 			}
 
@@ -255,7 +255,7 @@ function extractPropAndIndexes(prop) {
 			i++;
 			start = closeBracketIndex + 1;
 		} else {
-			if (!propName) {
+			if (propName == null) {
 				propName = prop;
 			}
 
@@ -295,10 +295,13 @@ const query = (obj, path) => {
 			}
 
 			const propName = parts.propName;
-			cur = cur[propName]
-
-			if (cur == undefined) {
+			
+			if (isObject(cur) && cur[propName] == undefined) {
 				break
+			}
+
+			if (propName) {
+				cur = cur[propName]
 			}
 
 			for (let index of parts.indexes) {
@@ -314,11 +317,11 @@ const query = (obj, path) => {
 	}
 }
 const set = (obj, path, value) => {
-	if ((isObject(obj) || isArray(obj)) && isSomeString(path)) {
+	if (isAnObject(obj) && isSomeString(path)) {
 		const arr = path.split('.')
-		const props = []
 		let cur = obj
 		let prev = cur;
+		let prevProp = '';
 		let i = 0;
 		let propName;
 		let index;
@@ -326,44 +329,53 @@ const set = (obj, path, value) => {
 		for (let prop of arr) {
 			const parts = extractPropAndIndexes(prop);
 			
-			props.push(propName);
-
 			if (parts.error) {
 				throw `index: ${parts.error.index}, ${parts.error.msg}`
 			}
 
 			propName = parts.propName;
 
-			if (propName && (!isObject(cur) || isArray(cur))) {
-				cur = prev[props[i - 1]] = {}
+			if (propName && !isObject(cur)) {
+				if (index != undefined) {
+					cur = prev[index] = {}
+				} else if (prevProp) {
+					cur = prev[prevProp] = {}
+				}
+			} else if (!propName && parts.indexes.length && !isArray(cur)) {
+				if (index != undefined) {
+					cur = prev[index] = []
+				} else if (prevProp) {
+					cur = prev[prevProp] = []
+				}
 			}
 			
 			prev = cur;
-			cur = cur[propName]
 
-			index = undefined;
-
-			if (cur == undefined) {
-				if (parts.indexes.length) {
-					cur = prev[propName] = []
+			if (propName) {
+				cur = cur[propName]
+	
+				index = undefined;
+	
+				if (cur == undefined) {
+					if (parts.indexes.length) {
+						cur = prev[propName] = []
+					} else {
+						cur = prev[propName] = {}
+					}
 				} else {
-					cur = prev[propName] = {}
+					if (parts.indexes.length && !isArray(cur)) {
+						cur = prev[propName] = []
+					} else if (!parts.indexes.length && !isObject(cur)) {
+						cur = prev[propName] = {}
+					}
 				}
 			}
 
-			if (parts.indexes.length) {
-				propName = '';
-			}
-			
 			let pi = 0;
 
 			for (index of parts.indexes) {
-				// if (!isArray(cur)) {
-				// 	cur = prev[parts.indexes[pi - 1]] = []
-				// }
-
 				prev = cur;
-				cur = cur[index]
+				cur = cur[index];
 
 				if (cur == undefined) {
 					if (pi == parts.indexes.length - 1) {
@@ -371,12 +383,20 @@ const set = (obj, path, value) => {
 					} else {
 						cur = prev[index] = []
 					}
+				} else if (pi < parts.indexes.length - 1 && !isArray(cur)) {
+					cur = prev[index] = []
 				}
 
 				pi++;
 			}
 
 			i++;
+
+			prevProp = propName;
+
+			if (parts.indexes.length) {
+				propName = '';
+			}
 		}
 
 		if (i == arr.length) {
@@ -384,88 +404,6 @@ const set = (obj, path, value) => {
 				prev[propName] = value;
 			} else if (index != undefined) {
 				prev[index] = value;
-			}
-		}
-	}
-
-	return obj;
-};
-
-const set1 = (obj, path, value) => {
-	if ((isSomeObject(obj) || isSomeArray(obj)) && isSomeString(path)) {
-		const arr = path.split('.')
-		let cur = obj
-		let prev = cur;
-		let propName;
-		let index;
-		let i = 0;
-
-		for (let prop of arr) {
-			if (cur == undefined) {
-				if (isArray(prev)) {
-					if (i < arr.length) {
-
-					}
-				} else {
-					if (propName) {
-						prev[propName] = {}
-					}
-				}
-
-				break
-			}
-
-			const openBracketIndex = prop.indexOf('[')
-
-			if (openBracketIndex >= 0) {
-				const closeBracketIndex = prop.indexOf(']', openBracketIndex);
-
-				if (closeBracketIndex > 0) {
-					index = prop.substr(openBracketIndex + 1, closeBracketIndex - openBracketIndex - 1)
-
-					if (isNumeric(index)) {
-						index = parseInt(index)
-						propName = prop.substr(0, openBracketIndex)
-					}
-				}
-			} else {
-				propName = prop
-			}
-
-			if (propName) {
-				prev = cur;
-
-				cur = cur[propName]
-
-				if (isArray(cur) && isNumber(index) && index >= 0 && index < cur.length) {
-					prev = cur;
-
-					cur = cur[index]
-				}
-			} else {
-				prev = cur;
-
-				if (isArray(cur) && isNumber(index) && index >= 0 && index < cur.length) {
-					cur = cur[index]
-				} else {
-					cur = undefined;
-
-					break;
-				}
-			}
-
-			i++;
-		}
-
-		if (i == arr.length) {
-			if (prev) {
-				if (isArray(prev)) {
-					if (isNumber(index) && index >= 0 && index < prev.length) {
-						prev[index] = value
-					}
-				} else {
-					prev[propName] = value;
-				}
 			}
 		}
 	}

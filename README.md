@@ -38,8 +38,8 @@ import { someFn } from '@locustjs/base'
 | `isNullOrEmpty(arg: any)` | returns `true` if `arg` is `null` or empty, otherwise returns `false` |
 | `isEmpty(arg: any)` | returns `true` if `arg` is empty (`null`, `undefined` or empty string), otherwise returns `false` |
 | `isSomeString(arg: any)` | returns `true` if `arg` is a non-zero length `string`, otherwise returns `false` |
-| `isAnObject(arg: any)` | returns `true` if `arg` is `object` and is not `null`, otherwise returns `false` |
-| `isObject(arg: any)` | returns `true` if `arg` is `object` and is not an instance of `String`, `Number`, `Boolean` or `Date`, otherwise returns `false` |
+| `isAnObject(arg: any)` | returns `true` if `arg` is not `null` and could be assumed an `object`. Instances of `String`, `Number`, `Boolean` or `Date` and `Array`s are assumed an `object` in this regard. |
+| `isObject(arg: any)` | returns `true` if `arg` is really an `object`. Instances of `String`, `Number`, `Boolean` or `Date` and `Array`s and `null` are not assumed object. |
 | `isSomething(arg: any)` | returns `true` if `arg` is not `null`, `undefined`, otherwise returns `false` |
 | `isSomeObject(arg: any)` | returns `true` if `arg` is an object with at least one key, otherwise returns `false` |
 | `isFunction(arg: any)` | returns `true` if `arg` is `function`, otherwise returns `false` |
@@ -668,10 +668,22 @@ query(obj, 'data[2][1].checks[1]')    // 15
 This function sets a value on an object based on a given property path. The source object is affected.
 
 ```javascript
-const obj = { }
+let obj = { }
 
-set(obj, 'a', 10)    // obj will be { a: 10 }
-set(obj, 'a.b', true)    // obj will be { a: { b: true } }
+set(obj, 'a', 10)    // { a: 10 }
+set(obj, 'a.b', true)    // { a: { b: true } }
+set(obj, 'a[1]', 'ali')    // { a: [null, 'ali'] }
+set(obj, 'a[1][2]', 'ali')    // { a: [null, [null, null, 'ali']] }
+set(obj, 'a[1][2].name', 'ali')    // { a: [null, [null, null, { name: 'ali' }]] }
+set(obj, 'a[1][2].name.fn', 'ali')    // { a: [null, [null, null, { name: { fn: 'ali' } }]] }
+set(obj, 'a[1].name', 'ali')    // { a: [null, { name: 'ali' }] }
+set(obj, 'a[1].name[0]', 'ali')    // { a: [null, { name: ['ali'] }] }
+
+obj = [];
+
+set(obj, '[1]', 'ali')    // [null, 'ali']
+set(obj, '[1][2]', 'ali')    // [null, [null, null, 'ali']]
+set(obj, '[1].name', 'ali')    // [null, { name: 'ali' }]
 ```
 
 ## `ConversionBase`
