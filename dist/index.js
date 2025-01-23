@@ -12,12 +12,18 @@ const isBasic = (x) => {
 const isPrimitive = (x) => isString(x) || isNumber(x) || isDate(x) || isBool(x);
 const isNull = (x) => x === null;
 const isUndefined = (x) => x === undefined;
-const isNullOrEmpty = (x) => isNull(x) || isUndefined(x) || (typeof x == 'number' && isNaN(x)) || (isString(x) && x.length == 0);
-const isEmpty = (x) => isNull(x) || isUndefined(x) || (typeof x == 'number' && isNaN(x)) || (isString(x) && x.trim() == '');
-const isSomeString = (x) => isString(x) && x.trim() != '';
+const isNullOrUndefined = (x) => isNull(x) || isUndefined(x);
+const isEmpty = (x, includeAllWhitespaces = true) => isNull(x) ||
+													 isUndefined(x) ||
+													 (typeof x == 'number' && isNaN(x)) ||
+													 (isString(x) && (x.length == 0 || (x.trim() == '' && includeAllWhitespaces)));
+const isSomeString = (x, includeAllWhitespaces = true) => isString(x) && (includeAllWhitespaces ? x.trim() != '': true);
+const isNullOrEmpty = (x) => isEmpty(x, false);
 const isAnObject = (x) => typeof x == 'object' && !isNull(x);
+const isObjectish = isAnObject;
 const isObject = (x) => isAnObject(x) && !isPrimitive(x) && !isArray(x);
 const isSomething = (x) => !isNull(x) && !isUndefined(x) && !(typeof x == 'number' && isNaN(x));
+const isNothing = (x) => isEmpty(x) || (isAnObject(x) && !isSomeObject(x));
 const isSomeObject = (x) => isObject(x) && Object.keys(x).length > 0;
 const isFunction = (x) => typeof x == 'function' && typeof x.nodeType !== 'number';
 const isNumeric = (x) => (isSomeString(x) || isNumber(x)) && !isNaN(x - parseFloat(x));	// borrowed from jQuery
@@ -26,7 +32,48 @@ const isFloat = (x) => isNumeric(x) && (Math.floor(x) - x) != 0;
 const isSomeNumber = (x) => isNumeric(x) && x != 0;
 const isjQueryElement = (x) => isObject(x) && isSomeString(x.jquery);
 const hasDate = (x) => (isDate(x) || isString(x) || isNumber(x)) && !isNaN(Date.parse(x));
-const hasBool = (x, ignoreCase = true) => isBool(x) || (isSomeString(x) && ['true', 'false'].indexOf(ignoreCase ? x.trim().toLowerCase() : x.trim()) >= 0);
+const hasBool = function (x, options) {
+	let _options;
+		
+	if (isString(options)) {
+		_options = {
+			pascal: options.indexOf('p') >= 0,
+			upper: options.indexOf('u') >= 0,
+			trim: options.indexOf('t') >= 0
+		};
+	} else {
+		_options = Object.assign({
+			pascal: true,
+			upper: true,
+			trim: true
+		}, options);
+	}
+	
+	if (isBool(x)) {
+		return true;
+	}
+
+	if (isString(x)) {
+		if (_options.trim) {
+			x = x.trim();
+		}
+		if (x == 'true' || x == 'false') {
+			return true;
+		}
+		if (_options.pascal) {
+			if (x == 'True' || x == 'False') {
+				return true
+			}
+		}
+		if (_options.upper) {
+			if (x == 'TRUE' || x == 'FALSE') {
+				return true
+			}
+		}
+	}
+
+	return false;
+};
 const isFormatedDate = (x) => isSomeString(x) && (
 	/^\d{1,4}\.\d{1,4}\.\d{1,4}$/.test(x) ||
 	/^\d{1,4}-\d{1,4}-\d{1,4}$/.test(x) ||
@@ -486,11 +533,14 @@ exports.isFunction = isFunction;
 exports.isInteger = isInteger;
 exports.isIterable = isIterable;
 exports.isNamespace = isNamespace;
+exports.isNothing = isNothing;
 exports.isNull = isNull;
 exports.isNullOrEmpty = isNullOrEmpty;
+exports.isNullOrUndefined = isNullOrUndefined;
 exports.isNumber = isNumber;
 exports.isNumeric = isNumeric;
 exports.isObject = isObject;
+exports.isObjectish = isObjectish;
 exports.isPrimitive = isPrimitive;
 exports.isSomeArray = isSomeArray;
 exports.isSomeNumber = isSomeNumber;

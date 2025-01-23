@@ -216,6 +216,7 @@ isPrimitive(new Date(1998, 5, 14))  // true
 
 
 ## `isNull(x: any): boolean`
+Returns `true` only when `x` is exactly `null`.
 
 ```javascript
 isNull('')          // false
@@ -226,6 +227,7 @@ isNull({})          // false
 ```
 
 ## `isUndefined(x: any): boolean`
+Returns `true` only when `x` is exactly `undefined`.
 
 ```javascript
 isUndefined('')          // false
@@ -235,18 +237,33 @@ isUndefined(NaN)         // false
 isUndefined({})          // false
 ```
 
-## `isEmpty(x: any): boolean`
+## `isNullOrUndefined(x: any): boolean`
+Returns `true` when `x` is `null` or `undefined`.
 
 ```javascript
-isEmpty('')          // true
-isEmpty('   ')       // true
-isEmpty(null)        // true
-isEmpty(undefined)   // true
-isEmpty(NaN)         // true
-isEmpty({})          // false
+isNullOrUndefined('')          // false
+isNullOrUndefined('   ')       // false
+isNullOrUndefined(null)        // true
+isNullOrUndefined(undefined)   // true
+isNullOrUndefined(NaN)         // false
+isNullOrUndefined({})          // false
+```
+
+## `isEmpty(x: any, includeAllWhitespaces = true): boolean`
+Returns `true` when `x` is `null`, `undefined`, zero-length string or a string that is only includes whitespace characters.
+
+```javascript
+isEmpty('')             // true
+isEmpty('   ')          // true
+isEmpty('   ', false)   // false
+isEmpty(null)           // true
+isEmpty(undefined)      // true
+isEmpty(NaN)            // true
+isEmpty({})             // false
 ```
 
 ## `isNullOrEmpty(x: any): boolean`
+Returns `true` when `x` is `null`, `undefined`, zero-length string.
 
 ```javascript
 isNullOrEmpty('')          // true
@@ -257,11 +274,13 @@ isNullOrEmpty(NaN)         // true
 isNullOrEmpty({})          // false
 ```
 
-> The difference between `isEmpty` and `isNullOrEmpty` is that, the former returns `true` on strings that have only whitespaces characters while the latter does not.
+> The difference between `isEmpty` and `isNullOrEmpty` is that, `isEmpty` by default returns `true` on strings that include only whitespaces characters, while `isNullOrEmpty` does not assume such strings as `NullOrEmpty`.
 
-## `isAnObject(x: any): boolean`
+## `isAnObject(x: any): boolean / isObjectish(x: any): boolean`
+Returns `true` when type of `x` is `object` and `x` is not `null`.
 
 ```javascript
+isAnObject(23)              // false
 isAnObject('')              // false
 isAnObject(null)            // false
 isAnObject(undefined)       // false
@@ -269,13 +288,18 @@ isAnObject(NaN)             // false
 isAnObject({})              // true
 isAnObject(new String())    // true
 isAnObject(new Number(5))   // true
-isAnObject([])              // false
-isAnObject([10, 20, 30])    // false
+isAnObject(new Date())      // true
+isAnObject([])              // true
+isAnObject([10, 20, 30])    // true
 ```
 
+> `isObjectish` is another name for `isAnObject`, meaning `x` can be assumed an `object`.
+
 ## `isObject(x: any): boolean`
+Returns `true` only when `x` is really an `object`. Arrays and instances of `String`, `Number`, `Boolean` and `Date` are not assumed an `object`.
 
 ```javascript
+isObject(23)              // false
 isObject('')              // false
 isObject(null)            // false
 isObject(undefined)       // false
@@ -287,26 +311,30 @@ isObject([])              // false
 isObject([10, 20, 30])    // false
 ```
 
-> `isObject` is a safe method that returns `true` only and only on objects. Although, arrays and instances of `String`, `Number` and `Boolean` types are `object`, `isObject` does not return `true` for them.
+> `isObject` is a safe method that returns `true` only on objects. Although, type of arrays and instances of `String`, `Number` and `Boolean` is `object`, `isObject` does not return `true` on them.
 
-## `isSomeString(x: any): boolean`
+## `isSomeString(x: any, includeAllWhitespaces = true): boolean`
+Returns `true` when `x` is a non-zero length `string` or `String`. By default it assumes strings including only whitespaces characters as not to be some-string. Passing `false` on `includeAllWhitespaces` parameter negates this assumption.
 
 ```javascript
-isSomeString(1)                 // false
-isSomeString(null)              // false
-isSomeString(undefined)         // false
-isSomeString(NaN)               // false
-isSomeString({})                // false
-isSomeString(``)                // false
-isSomeString('')                // false
-isSomeString('  ')              // false
-isSomeString("")                // false
-isSomeString('abc')             // true
-isSomeString(new String())      // false
-isSomeString(new String('123')) // true
+isSomeString(1)                         // false
+isSomeString(null)                      // false
+isSomeString(undefined)                 // false
+isSomeString(NaN)                       // false
+isSomeString({})                        // false
+isSomeString({ a: 23 })                 // false
+isSomeString('')                        // false
+isSomeString('  ')                      // false
+isSomeString('  ', false)               // true
+isSomeString('abc')                     // true
+isSomeString(new String())              // false
+isSomeString(new String('  '))          // false
+isSomeString(new String('  '), true)    // true
+isSomeString(new String('123'))         // true
 ```
 
 ## `isSomeNumber(x: any): boolean`
+Returns `true` when `x` is `number` or an instance of `Number` and is not `0`.
 
 ```javascript
 isSomeNumber(1)                 // true
@@ -327,6 +355,7 @@ isSomeNumber(new Number(12.34)) // true
 ```
 
 ## `isSomeObject(x: any): boolean`
+Returns `true` when `x` is an `object` and it has at least one `property`.
 
 ```javascript
 isSomeObject('')              // false
@@ -342,6 +371,7 @@ isSomeObject({ a: 10 })       // true
 ```
 
 ## `isSomeArray(x: any): boolean`
+Returns `true` when `x` is a non-zero length array.
 
 ```javascript
 isSomeArray('')              // false
@@ -357,6 +387,7 @@ isSomeArray({ a: 10 })       // false
 ```
 
 ## `isSomething(x: any): boolean`
+Returns `true` when `x` is not `null`, `undefined` or `NaN`.
 
 ```javascript
 isSomething('')              // true
@@ -368,7 +399,21 @@ isSomething(new String())    // true
 isSomething(new Number(5))   // true
 ```
 
+## `isNothing(x: any): boolean`
+Returns `true` when `x` is `null`, `undefined`, `NaN`, empty object (`{}`) or empty arrays (`[]`).
+
+```javascript
+isNothing('')              // true
+isNothing(null)            // false
+isNothing(undefined)       // false
+isNothing(NaN)             // false
+isNothing({})              // true
+isNothing(new String())    // true
+isNothing(new Number(5))   // true
+```
+
 ## `isFunction(x: any): boolean`
+Returns `true` when `x` is a function.
 
 ```javascript
 isFunction('')                          // false
@@ -387,9 +432,11 @@ isFunction(() => {})                    // true
 isFunction(() => { return 10 })         // true
 isFunction(function () {})              // true
 isFunction(function () { return 10 })   // true
+isFunction(new Function('return "a"'))  // true
 ```
 
 ## `hasDate(x: any): boolean`
+Returns `true` when `x` contains a `date` object or a string in the form of `date`. Numbers are also assumed as dates.
 
 ```javascript
 hasDate('')                     // false
@@ -407,33 +454,35 @@ hasDate(5)                      // true
 hasDate(new Number(5))          // true
 ```
 
-## `hasBool(x: any): boolean`
+## `hasBool(x: any, ignoreCase = true): boolean`
+Returns `true` when `x` is `true` or `false`. It trims given input and accepts pascal-case and uppercase forms of `true` | `false` values. Through a second options parameter, this behavior could be customized.
 
 ```javascript
 hasBool('')                     // false
 hasBool(null)                   // false
 hasBool(undefined)              // false
 hasBool(NaN)                    // false
+hasBool(5)                      // false
+hasBool(new Number(5))          // false
 hasBool({})                     // false
 hasBool({ a: 10 })              // false
 hasBool(new Boolean())          // true
-hasBool(new Boolean(true))      // true
+hasBool(new Boolean(false))     // true
 hasBool('')                     // false
 hasBool('true')                 // true
 hasBool('false')                // true
 hasBool('  true    ')           // true
 hasBool('   false')             // true
 hasBool('True')                 // true
-hasBool('tRUe')                 // true
 hasBool('FALSE')                // true
 hasBool('   FALSE ')            // true
-hasBool('True', false)          // false
-hasBool('FALSE', false)         // false
 hasBool(new String('true'))     // true
 hasBool(new String('  true'))   // true
 hasBool(new String('FALSE'))    // true
-hasBool(5)                      // false
-hasBool(new Number(5))          // false
+hasBool('TRue')                 // false
+hasBool('  true ', { trim: false })  // false
+hasBool('True', { pascal: false })  // false
+hasBool('FALSE', { upper: false })  // false
 ```
 
 ## `isNamespace(x: any): boolean`
