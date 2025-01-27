@@ -8,7 +8,7 @@ npm i @locustjs/base
 
 ## Current Version
 ```
-4.2.1
+4.4.0
 ```
 
 # Import
@@ -27,42 +27,48 @@ import { someFn } from '@locustjs/base'
 # Functions
 | function | description |
 |------|--------|
-| `isString(arg: any)` |returns `true` if `arg` is `string`, otherwise returns `false`|
+| `isString(arg: any, n: int)` |returns `true` if `arg` is `string`, otherwise returns `false`. if `n` is provider, returns `true` when `arg` is a `string` whose length is `n`. |
 | `isNumber(arg: any)` | returns `true` if `arg` is `number`, otherwise returns `false`|
 |`isDate(arg: any)`|returns `true` if `arg` is `date`, otherwise returns `false`|
 | `isBool(arg: any)`|returns `true` if `arg` is `boolean`, otherwise returns `false`|
 | `isaN(arg: any)` |returns `true` if `arg` is a `number`, otherwise returns `false`|
-| `isBasic(arg: any)` | returns `true` if `arg` is basic data type (`number`, `boolean`, `string`, `date`), otherwise returns `false` |
-| `isPrimitive(arg: any)` | it is similar to `isBasic`, however, it accepts `Number`, `String`, `Boolean` and `Date` |
+| `isBasic(arg: any)` | returns `true` if `arg` is basic data type (`number`, `boolean`, `string`, `date`), otherwise returns `false`. Instances of `String`, `Number`, `Boolean` and `Date` are not assumed `Basic`. |
+| `isPrimitive(arg: any)` | it is similar to `isBasic`. It also accepts `Number`, `String`, `Boolean` and `Date`. |
 | `isNull(arg: any)` | returns `true` if `arg` is `null`, otherwise returns `false` |
-| `isNullOrEmpty(arg: any)` | returns `true` if `arg` is `null` or empty, otherwise returns `false` |
-| `isEmpty(arg: any)` | returns `true` if `arg` is empty (`null`, `undefined` or empty string), otherwise returns `false` |
-| `isSomeString(arg: any)` | returns `true` if `arg` is a non-zero length `string`, otherwise returns `false` |
-| `isAnObject(arg: any)` | returns `true` if `arg` is not `null` and could be assumed an `object`. Instances of `String`, `Number`, `Boolean` or `Date` and `Array`s are assumed an `object` in this regard. |
-| `isObject(arg: any)` | returns `true` if `arg` is really an `object`. Instances of `String`, `Number`, `Boolean` or `Date` and `Array`s and `null` are not assumed object. |
-| `isSomething(arg: any)` | returns `true` if `arg` is not `null`, `undefined`, otherwise returns `false` |
-| `isSomeObject(arg: any)` | returns `true` if `arg` is an object with at least one key, otherwise returns `false` |
+| `isUndefined(arg: any)` | returns `true` if `arg` is `undefined`, otherwise returns `false` |
+| `isNullOrUndefined(arg: any)` | returns `true` if `arg` is `null` or `undefined`, otherwise returns `false` |
+| `isEmpty(arg: any, includeAllWhitespaces = true)` | returns `true` if `arg` is empty (`null`, `undefined` or empty string), otherwise returns `false`. It also returns `true` for whitespace-only string, unless `includeAllWhitespaces` is passed as `false`. |
+| `isSomeString(arg: any, trimWhitespaces = true)` | returns `true` if `arg` is a non-zero length `string`, otherwise returns `false`. It returns `false` on whitespace-only strings, unless `trimWhitespaces` is passed as `false`. |
+| `isNullOrEmpty(arg: any)` | returns `true` if `arg` is `null`, `undefined` or empty strings, otherwise returns `false` (it equals `isEmpty(arg, false)`). |
+| `isAnObject(arg: any)` | returns `true` if `arg` non-null `object`. Instances of `String`, `Number`, `Boolean` or `Date` and `Array`s are assumed an `object`. |
+| `isObject(arg: any)` | returns `true` if only and only `arg` is really an `object`. Instances of `String`, `Number`, `Boolean` 
+or `Date` and `Array`s are not assumed object. |
+| `isObjectish(arg: any)` | Acts like `isAnObject` (it is another name for `isAnObject`). |
+| `isSomething(arg: any)` | returns `true` if `arg` is something valuable, i.e. it is not `null`, `undefined` or `NaN`, otherwise returns `false` |
+| `isNothing(arg: any)` | returns `true` if `arg` could not be assume something valuable. `null`, `undefined`, `NaN`, empty strings and empty objects are all assumed nothing. |
 | `isFunction(arg: any)` | returns `true` if `arg` is `function`, otherwise returns `false` |
-| `isNumeric(arg: any)` | returns `true` if `arg` is numeric, otherwise returns `false` |
-| `isInteger(arg: any)` | returns `true` if `arg` is an integer number, otherwise returns `false` |
+| `isNumeric(arg: any)` | returns `true` if `arg` is `number` or a string containing a `number`, otherwise returns `false` |
+| `isInteger(arg: any)` | returns `true` if `arg` is an integer number, otherwise returns `false` (it behaves as `Number.isInteger()`) |
 | `isFloat(arg: any)` | returns `true` if `arg` is a floating-point number, otherwise returns `false` |
-| `isSomeNumber(arg: any)` | returns `true` if `arg` is non-zero number, otherwise returns `false` |
 | `isjQueryElement(arg: any)` | returns `true` if `arg` is a `jQuery` element, otherwise returns `false` |
 | `hasDate(arg: any)` | returns `true` if `arg` is a `string` containing a date value, otherwise returns `false` |
-| `hasBool(arg: any)` | returns `true` if `arg` is a string containing `true` or `false`, otherwise returns `false` |
+| `hasBool(arg: any, options)` | returns `true` if `arg` is a `boolean` value or a string whose trimmed value is `true` or `false`, otherwise returns `false`. It also returns `true` on `True`, `False`, `TRUE`, `FALSE` string values. This behavior can be customized through `options` argument. This is explained furthur. |
 | `isFormatedDate(arg: any)` | returns `true` if `arg` is a string containing a date value in `yyyy-MM-dd`, `yyyy/MM/dd`, `yyyy.MM.dd` or `yyyy\MM\dd` format, otherwise returns `false` |
 | `isArray(arg: any)` | returns `true` if `arg` is an array, otherwise returns `false` |
-| `isIterable(arg: any)` | returns `true` if `arg` is iterable (like an array), otherwise returns `false` |
+| `isIterable(arg: any)` | returns `true` if `arg` is iterable (can be iterated), otherwise returns `false` |
+| `isSomeObject(arg: any)` | returns `true` if `arg` is an object with at least one key, otherwise returns `false` |
+| `isSomeNumber(arg: any)` | returns `true` if `arg` is non-zero number or numeric string, otherwise returns `false` |
 | `isSomeArray(arg: any)` | returns `true` if `arg` is a non-empty array , otherwise returns `false` |
-| `isNamespace(arg: any)` | returns `true` if `arg` is a namespace string, i.e. an string starting and ending with a letter and containing only letter/digit or underscore, otherwise returns `false` |
-| `isSubClassOf(child, parent)` | returns `true` if `child` is sub-class of `parent`, otherwise returns `false` |
-| `forEach(x, callback)` | iterates over an array, an object or an iterable list, invokes `callback` passing it each value and at the end returns list of callback results. |
-| `query(object, path)` | queries over `object` based on the given `path` in string. |
-| `set(object, path, value)` | sets value of the given `path` in the given `object`. |
+| `isNamespace(arg: any)` | returns `true` if `arg` is a namespace string, i.e. an string starting with a letter and containing only letter/digit, dot or underscore, otherwise returns `false` |
+| `isRegex(x: any)` | returns `true` if `arg` is a regular-expression (an instance of `RegExp`). |
+| `isSubClassOf(childClass, parentClass)` | returns `true` if `childClass` is sub-class of `parentClass`, otherwise returns `false`. |
+| `foreach(x, callback)` or `forEach(x, callback)` | iterates over an array, an object or an iterable list, invokes `callback` on each iteration, passing it current value and other information. At the end, it returns an array containing the result of invokations of the `callback`. |
+| `query(object, path)` | queries over `object` based on the given `path` in string (explained furthur). |
+| `set(object, path, value)` | sets value of the given `path` in the given `object` (explained furthur). |
 | `equals(a, b, strict = false)` | checks whether the two arguments are equal in loose mode or strict mode based on the boolean `strict` argument. |
 
 # Examples
-## `isString(x: any): boolean`
+## `isString(x: any, n: int): boolean`
 
 ```javascript
 isString(1)                 // false
@@ -76,6 +82,8 @@ isString("")                // true
 isString('abc')             // true
 isString(new String())      // true
 isString(new String('123')) // true
+isString('abc', 2)          // true
+isString('abc', 5)          // false
 ```
 
 ## `isNumber(x: any): boolean`, `isaN(x: any): boolean`
@@ -177,7 +185,7 @@ isBool('true')              // false
 isBool("false")             // false
 isBool(true)                // true
 isBool(new Boolean())       // true
-isBool(new Boolean(true))   // true
+isBool(new Boolean(false))   // true
 ```
 
 ## `isBasic(x: any): boolean`
@@ -212,7 +220,7 @@ isPrimitive(new Number(123))        // true
 isPrimitive(new Date(1998, 5, 14))  // true
 ```
 
-> The difference between `isBasic` and `isPrimitive` is that, the former does not return `true` on instances of `String`, `Number` and `Boolean`, while the latter does.
+> The difference between `isBasic` and `isPrimitive` is that, `isBasic` does not return `true` on instances of `String`, `Number`, `Boolean` and `Date`, while `isPrimitive` does.
 
 
 ## `isNull(x: any): boolean`
@@ -274,9 +282,9 @@ isNullOrEmpty(NaN)         // true
 isNullOrEmpty({})          // false
 ```
 
-> The difference between `isEmpty` and `isNullOrEmpty` is that, `isEmpty` by default returns `true` on strings that include only whitespaces characters, while `isNullOrEmpty` does not assume such strings as `NullOrEmpty`.
+> The difference between `isEmpty` and `isNullOrEmpty` is that, `isEmpty` by default returns `true` on whitespace-only strings, while `isNullOrEmpty` does not.
 
-## `isAnObject(x: any): boolean / isObjectish(x: any): boolean`
+## `isAnObject(x: any): boolean`
 Returns `true` when type of `x` is `object` and `x` is not `null`.
 
 ```javascript
@@ -299,22 +307,24 @@ isAnObject([10, 20, 30])    // true
 Returns `true` only when `x` is really an `object`. Arrays and instances of `String`, `Number`, `Boolean` and `Date` are not assumed an `object`.
 
 ```javascript
-isObject(23)              // false
-isObject('')              // false
-isObject(null)            // false
-isObject(undefined)       // false
-isObject(NaN)             // false
-isObject({})              // true
-isObject(new String())    // false
-isObject(new Number(5))   // false
-isObject([])              // false
-isObject([10, 20, 30])    // false
+isObject(23)                // false
+isObject('')                // false
+isObject(null)              // false
+isObject(undefined)         // false
+isObject(NaN)               // false
+isObject({})                // true
+isObject(new String())      // false
+isObject(new Number(5))     // false
+isObject(/\d+/)             // true
+isObject(new RegExp('\d+')  // true
+isObject([])                // false
+isObject([10, 20, 30])      // false
 ```
 
-> `isObject` is a safe method that returns `true` only on objects. Although, type of arrays and instances of `String`, `Number` and `Boolean` is `object`, `isObject` does not return `true` on them.
+> `isObject` is a safe method that returns `true` only on real objects. Although, type of arrays and instances of `String`, `Number` and `Boolean` is `object`, `isObject()` does not return `true` on them. This decision is made so that we can explicitly differ between `Objects`, primitve data types and `Arrays`.
 
-## `isSomeString(x: any, includeAllWhitespaces = true): boolean`
-Returns `true` when `x` is a non-zero length `string` or `String`. By default it assumes strings including only whitespaces characters as not to be some-string. Passing `false` on `includeAllWhitespaces` parameter negates this assumption.
+## `isSomeString(x: any, trimWhitespaces = true): boolean`
+Returns `true` when `x` is a non-zero length `string` or `String`. By default it assumes whitespace-only strings as not to be some-string. Passing `false` on `trimWhitespaces` parameter negates this assumption.
 
 ```javascript
 isSomeString(1)                         // false
@@ -334,7 +344,7 @@ isSomeString(new String('123'))         // true
 ```
 
 ## `isSomeNumber(x: any): boolean`
-Returns `true` when `x` is `number` or an instance of `Number` and is not `0`.
+Returns `true` when `x` is a non-zero `number` or `Number`.
 
 ```javascript
 isSomeNumber(1)                 // true
@@ -355,7 +365,7 @@ isSomeNumber(new Number(12.34)) // true
 ```
 
 ## `isSomeObject(x: any): boolean`
-Returns `true` when `x` is an `object` and it has at least one `property`.
+Returns `true` when `x` is an `object` with at least one `property`.
 
 ```javascript
 isSomeObject('')              // false
@@ -400,15 +410,21 @@ isSomething(new Number(5))   // true
 ```
 
 ## `isNothing(x: any): boolean`
-Returns `true` when `x` is `null`, `undefined`, `NaN`, empty object (`{}`) or empty arrays (`[]`).
+Returns `true` when `x` is `null`, `undefined`, `NaN`, zero number, zero-length string, empty array (`[]`) or empty object (`{}`).
 
 ```javascript
 isNothing('')              // true
-isNothing(null)            // false
-isNothing(undefined)       // false
-isNothing(NaN)             // false
+isNothing(0)               // true
+isNothing(new Number(0))   // true
+isNothing('0')             // true
+isNothing('  0  ')         // false
+isNothing(null)            // true
+isNothing(undefined)       // true
+isNothing(NaN)             // true
+isNothing([])              // true
 isNothing({})              // true
 isNothing(new String())    // true
+isNothing('  ')            // false
 isNothing(new Number(5))   // true
 ```
 
@@ -454,8 +470,8 @@ hasDate(5)                      // true
 hasDate(new Number(5))          // true
 ```
 
-## `hasBool(x: any, ignoreCase = true): boolean`
-Returns `true` when `x` is `true` or `false`. It trims given input and accepts pascal-case and uppercase forms of `true` | `false` values. Through a second options parameter, this behavior could be customized.
+## `hasBool(x: any, options): boolean`
+Returns `true` when `x` is a `boolean` value or a string whose trimmed value is `true` or `false`.
 
 ```javascript
 hasBool('')                     // false
@@ -473,34 +489,81 @@ hasBool('true')                 // true
 hasBool('false')                // true
 hasBool('  true    ')           // true
 hasBool('   false')             // true
+hasBool(new String('true'))     // true
+hasBool(new String('  false'))  // true
+```
+
+`hasBool` also returns `true` on strings whose trimmed value is pascal-case and uppercase of `true` and `false`, i.e. `True`, `False`, `TRUE` or `FALSE`.
+
+```javascript
 hasBool('True')                 // true
 hasBool('FALSE')                // true
 hasBool('   FALSE ')            // true
-hasBool(new String('true'))     // true
-hasBool(new String('  true'))   // true
+hasBool(new String('TRUE   '))  // true
+hasBool(new String('  True'))   // true
 hasBool(new String('FALSE'))    // true
 hasBool('TRue')                 // false
+```
+
+This behavior can be customized through the second `options` argument. The `options` argument can have the following structure:
+
+```javascript
+{
+    pascal: true | false,   // accept `True`, `False` as bool or not (default is true)
+    upper: true | false,    // accept `TRUE`, `FALSE` as bool or not (default is true)
+    trim: true | false  // trim strings (default is true)
+}
+```
+
+```javascript
 hasBool('  true ', { trim: false })  // false
 hasBool('True', { pascal: false })  // false
 hasBool('FALSE', { upper: false })  // false
 ```
 
+It is possible to pass a string as `options`. If the string contains each of `p`, `u` or `t` letters, `hasBool` assumes pascale-case, uppercase and trimming options as `true` respectively.
+
+```javascript
+// enable pascalcase and trimming
+hasBool('  true ', 'pt')  // true
+hasBool('False', 'pt')  // true
+hasBool('TRUE', 'pt')  // false
+
+// enable trimming only
+hasBool('  true ', 't') // true
+hasBool('True', 't')  // false
+hasBool('FALSE', 't')  // false
+
+// enable nothing
+hasBool('true', '') // true
+hasBool('false', '') // true
+hasBool('  true ', '') // false
+hasBool('false   ', '') // false
+hasBool('True', '')  // false
+hasBool('FALSE', '')  // false
+```
+
 ## `isNamespace(x: any): boolean`
 
 ```javascript
-isNamespace(null)   // false
-isNamespace('')     // false
-isNamespace('_')    // false
-isNamespace('a')    // true
-isNamespace(' a')   // false
-isNamespace('_a')   // false
-isNamespace('a_')   // false
-isNamespace('a1')   // true
-isNamespace('1')    // false
-isNamespace('1a')   // false
+isNamespace(null)       // false
+isNamespace('')         // false
+isNamespace('_')        // false
+isNamespace('a')        // true
+isNamespace(' a')       // false
+isNamespace('_a')       // false
+isNamespace('a_')       // true
+isNamespace('a1')       // true
+isNamespace('1')        // false
+isNamespace('1a')       // false
+isNamespace('a.')       // false
+isNamespace('a.b')      // true
+isNamespace('a.b.')     // false
+isNamespace('a.b.c1')   // true
 ```
 
 ## `isSubClassOf(ChildClass, ParentClass)`
+Checks whether `ChildClass` is a subclass of `ParentClass`.
 
 ```javascript
 class Foo {}
@@ -512,9 +575,9 @@ isSubClassOf(Baz, Foo)  // false
 ```
 
 ## `forEach(x: any, callback: function): array`
-This function iterates over `x`'s props and calls `callback` on each iteration. It returns an array of `callback`'s return value. if the callback does not return anything, it uses value of current prop.
+This function iterates over `x` and calls `callback` on each iteration. `x` could be an `array` or an object. If `x` is object, `forEach` iterates over its properties. At the end, it returns an array of `callback`'s return value.
 
-`callback` receives an object with the following structure:
+The `callback` function has a single parameter with the following structure:
 
 ```javascript
 {
@@ -652,7 +715,7 @@ equals({ a: 10, b: [20, {c: 30}] }, { a: 10, b: ['20', {c: '30'}] }, true) // fa
 ```
 
 ## `query(obj: any, path: string): any`
-This function reads a value from an object.
+This function reads a value from an object based on the given `path`.
 
 ```javascript
 const obj = {
@@ -714,7 +777,7 @@ query(obj, 'data[2][1].checks[1]')    // 15
 ```
 
 ## `set(obj: any, path: string, value: any): object`
-This function sets a value on an object based on a given property path. The source object is affected.
+This function sets a value on an object based on a given `path`. The source object is affected.
 
 ```javascript
 let obj = { }

@@ -15,13 +15,13 @@ const isEmpty = (x, includeAllWhitespaces = true) => isNull(x) ||
 													 isUndefined(x) ||
 													 (typeof x == 'number' && isNaN(x)) ||
 													 (isString(x) && (x.length == 0 || (x.trim() == '' && includeAllWhitespaces)));
-const isSomeString = (x, includeAllWhitespaces = true) => isString(x) && (includeAllWhitespaces ? x.trim() != '': true);
+const isSomeString = (x, trimWhitespaces = true) => isString(x) && (trimWhitespaces ? x.trim() != '': true);
 const isNullOrEmpty = (x) => isEmpty(x, false);
 const isAnObject = (x) => typeof x == 'object' && !isNull(x);
 const isObjectish = isAnObject;
 const isObject = (x) => isAnObject(x) && !isPrimitive(x) && !isArray(x);
-const isSomething = (x) => !isNull(x) && !isUndefined(x) && !(typeof x == 'number' && isNaN(x));
-const isNothing = (x) => isEmpty(x) || (isAnObject(x) && !isSomeObject(x));
+const isSomething = (x) => !isNullOrUndefined(x) && !(typeof x == 'number' && isNaN(x));
+const isNothing = (x) => isNullOrEmpty(x) || (isNumeric(x) && x == 0) || (isAnObject(x) && Object.keys(x).length == 0);
 const isSomeObject = (x) => isObject(x) && Object.keys(x).length > 0;
 const isFunction = (x) => typeof x == 'function' && typeof x.nodeType !== 'number';
 const isNumeric = (x) => (isSomeString(x) || isNumber(x)) && !isNaN(x - parseFloat(x));	// borrowed from jQuery
@@ -98,7 +98,8 @@ const isIterable = function (x) {	 	// source: https://developer.mozilla.org/en-
 };
 const isSomeArray = (x) => isArray(x) && x.length > 0;
 const isNamespace = (x) => isSomeString(x) && /^[a-zA-Z]\w*(\.[a-zA-Z]\w*)*$/.test(x);
-const isSubClassOf = (child, parent) => child && isFunction(parent) && (child === parent || child.prototype instanceof parent);
+const isRegex = x => isObject(x) && x instanceof RegExp;
+const isSubClassOf = (childClass, parentClass) => childClass && isFunction(parentClass) && (childClass === parentClass || childClass.prototype instanceof parentClass);
 const forEach = (x, callback) => {
 	let result = [];
 
@@ -262,7 +263,7 @@ const similars = function (objA, objB) {
 	return true;
 }
 
-function extractPropAndIndexes(prop) {
+function _extractPropAndIndexes(prop) {
 	let propName;
 	let error;
 	let start = 0;
@@ -335,7 +336,7 @@ const query = (obj, path) => {
 				break
 			}
 
-			const parts = extractPropAndIndexes(prop);
+			const parts = _extractPropAndIndexes(prop);
 
 			if (parts.error) {
 				throw `index: ${parts.error.index}, ${parts.error.msg}`
@@ -374,7 +375,7 @@ const set = (obj, path, value) => {
 		let index;
 
 		for (let prop of arr) {
-			const parts = extractPropAndIndexes(prop);
+			const parts = _extractPropAndIndexes(prop);
 			
 			if (parts.error) {
 				throw `index: ${parts.error.index}, ${parts.error.msg}`
@@ -583,6 +584,7 @@ export {
 	isIterable,
 	isSomeArray,
 	isNamespace,
+	isRegex,
 	isSubClassOf,
 	forEach,
 	foreach,
