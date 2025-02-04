@@ -15,11 +15,11 @@ describe("locustjs-base test suite: testing query", function () {
   });
 
   it(`query(23, 'a')`, function () {
-    expect(locust.query(23, 'a')).toBe(undefined);
+    expect(locust.query(23, "a")).toBe(undefined);
   });
 
   it(`query(23, '[0])`, function () {
-    expect(locust.query(23, '[0]')).toBe(undefined);
+    expect(locust.query(23, "[0]")).toBe(undefined);
   });
 
   it(`query('')`, function () {
@@ -27,15 +27,15 @@ describe("locustjs-base test suite: testing query", function () {
   });
 
   it(`query('abc')`, function () {
-    expect(locust.query('abc')).toBe(undefined);
+    expect(locust.query("abc")).toBe(undefined);
   });
 
   it(`query('abc', 'a')`, function () {
-    expect(locust.query('abc', 'a')).toBe(undefined);
+    expect(locust.query("abc", "a")).toBe(undefined);
   });
 
   it(`query('abc', '[0]')`, function () {
-    expect(locust.query('abc', '[0]')).toBe(undefined);
+    expect(locust.query("abc", "[0]")).toBe(undefined);
   });
 
   it(`query({}, 'a')`, function () {
@@ -82,5 +82,22 @@ describe("locustjs-base test suite: testing query", function () {
 
   it(`query([10], '[1]')`, function () {
     expect(locust.query([10], "[1]")).toBe(undefined);
+  });
+
+  it(`query(x, ...)`, function () {
+    const x = {
+      name: "John",
+      address: {
+        city: { id: 10, name: "Tehran" },
+        zip: "12345678",
+      },
+    };
+
+    expect(locust.query(x, "name")).toBe("John");
+    expect(typeof locust.query(x, "address")).toBe("object");
+    expect(locust.query(x, "address.city.id")).toBe(10);
+    expect(locust.query(x, "address.city.code")).toBeUndefined();
+    expect(typeof locust.query(x, "address.city")).toBe("object");
+    expect(locust.query(x, "name.size")).toBeUndefined();
   });
 });

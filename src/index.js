@@ -345,6 +345,7 @@ const query = (obj, path) => {
 			const propName = parts.propName;
 			
 			if (isObject(cur) && cur[propName] == undefined) {
+				cur = undefined;
 				break
 			}
 
