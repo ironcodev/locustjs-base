@@ -1,6 +1,6 @@
 {
   "name": "@locustjs/base",
-  "version": "4.4.1",
+  "version": "4.5.0",
   "description": "This library contains basic utilities and type checking functions",
   "main": "dist/index.js",
   "module": "src/index.js",

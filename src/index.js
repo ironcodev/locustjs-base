@@ -459,7 +459,17 @@ const set = (obj, path, value) => {
 
 	return obj;
 };
-
+const isEqualityComparer = (x) => isObject(x) && isFunction(x.equals);
+const DefaultEqualityComparer = {
+	equals: (x, y) =>
+		isNullOrEmpty(x)
+		? isNullOrEmpty(y)
+			? true
+			: false
+		: isNullOrEmpty(y)
+		? false
+		: x.toString().toLowerCase() == y.toString().toLowerCase(),
+};
 class ConversionBase {
 	get _name() {
 		return this.constructor.name
@@ -593,6 +603,8 @@ export {
 	//similars,	=> not ready yet
 	query,
 	set,
+	isEqualityComparer,
+	DefaultEqualityComparer,
 	convert,
 	ConversionBase,
 	ConversionDefault,
