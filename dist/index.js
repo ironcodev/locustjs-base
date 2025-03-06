@@ -422,7 +422,17 @@ const set = (obj, path, value) => {
 
 	return obj;
 };
-
+const isEqualityComparer = (x) => isObject(x) && isFunction(x.equals);
+const DefaultEqualityComparer = {
+	equals: (x, y) =>
+		isNullOrEmpty(x)
+		? isNullOrEmpty(y)
+			? true
+			: false
+		: isNullOrEmpty(y)
+		? false
+		: x.toString().toLowerCase() == y.toString().toLowerCase(),
+};
 class ConversionBase {
 	get _name() {
 		return this.constructor.name
@@ -518,6 +528,7 @@ class Convert {
 exports.ConversionBase = ConversionBase;
 exports.ConversionDefault = ConversionDefault;
 exports.Convert = Convert;
+exports.DefaultEqualityComparer = DefaultEqualityComparer;
 exports.equals = equals;
 exports.forEach = forEach;
 exports.foreach = foreach;
@@ -529,6 +540,7 @@ exports.isBasic = isBasic;
 exports.isBool = isBool;
 exports.isDate = isDate;
 exports.isEmpty = isEmpty;
+exports.isEqualityComparer = isEqualityComparer;
 exports.isFloat = isFloat;
 exports.isFormatedDate = isFormatedDate;
 exports.isFunction = isFunction;
