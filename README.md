@@ -8,7 +8,7 @@ npm i @locustjs/base
 
 ## Current Version
 ```
-4.4.0
+4.5.1
 ```
 
 # Import
