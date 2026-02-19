@@ -1,7 +1,7 @@
 import * as locust from '../src'
 
 // -------------- isNamespace -----------------
-describe('locustjs-base test suite: testing isNamespace', function() {
+describe('@locustjs/base test suite: testing isNamespace', function() {
   it(`isNamespace(null)`, function() {
      expect(locust.isNamespace(null)).toBe(false);
   });

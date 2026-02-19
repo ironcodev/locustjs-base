@@ -1,7 +1,7 @@
 import * as locust from "../src";
 
 // -------------- query -----------------
-describe("locustjs-base test suite: testing query", function () {
+describe("@locustjs/base test suite: testing query", function () {
   it(`query(null)`, function () {
     expect(locust.query(null)).toBe(undefined);
   });

@@ -74,6 +74,37 @@ const hasBool = function (x, options) {
 
 	return false;
 };
+const typename = x => {
+	let result;
+
+	if (x === null) {
+		result = "null";
+	} else if (x === undefined) {
+		result = "undefined";
+	} else if (isArray(x)) {
+		result = "array";
+	} else if (isDate(x)) {
+		result = "date";
+	} else if (isString(x)) {
+		result = "string";
+	} else if (isNumber(x)) {
+		result = "number";
+	} else if (isBool(x)) {
+		result = "boolean";
+	} else if (isIterable(x)) {
+		result = "iterable";
+	} else if (isFunction(x)) {
+		result = "function";
+	} else if (isObject(x)) {
+		result = "object";
+	} else if (isNaN(x)) {
+		result = "NaN";
+	} else {
+		result = typeof x;
+	}
+
+	return result;
+};
 const isFormatedDate = (x) => isSomeString(x) && (
 	/^\d{1,4}\.\d{1,4}\.\d{1,4}$/.test(x) ||
 	/^\d{1,4}-\d{1,4}-\d{1,4}$/.test(x) ||
@@ -569,3 +600,4 @@ exports.isaN = isaN;
 exports.isjQueryElement = isjQueryElement;
 exports.query = query;
 exports.set = set;
+exports.typename = typename;

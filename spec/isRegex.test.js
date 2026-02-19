@@ -1,7 +1,7 @@
 import * as locust from "../src";
 
 // -------------- isRegex -----------------
-describe("locustjs-base test suite: testing isRegex", function () {
+describe("@locustjs/base test suite: testing isRegex", function () {
   it(`isRegex(null)`, function () {
     expect(locust.isRegex(null)).toBe(false);
   });

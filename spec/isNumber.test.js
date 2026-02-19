@@ -1,7 +1,7 @@
 import * as locust from '../src'
 
 // -------------- isNumber -----------------
-describe('locustjs-base test suite: testing isNumber', function() {
+describe('@locustjs/base test suite: testing isNumber', function() {
   it(`isNumber(null)`, function() {
      expect(locust.isNumber(null)).toBe(false);
   });

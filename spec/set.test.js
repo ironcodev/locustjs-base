@@ -1,7 +1,7 @@
 import * as locust from "../src";
 
 // -------------- set -----------------
-describe("locustjs-base test suite: testing set", function () {
+describe("@locustjs/base test suite: testing set", function () {
   it(`set(null)`, function () {
     expect(locust.set(null)).toBe(null);
   });

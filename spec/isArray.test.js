@@ -1,7 +1,7 @@
 import * as locust from '../src'
 
 // -------------- isArray -----------------
-describe('locustjs-base test suite: testing isArray', function() {
+describe('@locustjs/base test suite: testing isArray', function() {
   it(`isArray(null)`, function() {
      expect(locust.isArray(null)).toBe(false);
   });

@@ -1,7 +1,7 @@
 import { forEach } from '../src'
 
 // -------------- forEach -----------------
-describe('locustjs-base test suite: testing forEach', function() {
+describe('@locustjs/base test suite: testing forEach', function() {
 	it(`should fail passing not a function to forEach's callback`, function() {
 		let result;
 		

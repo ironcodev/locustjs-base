@@ -62,6 +62,7 @@ or `Date` and `Array`s are not assumed object. |
 | `isNamespace(arg: any)` | returns `true` if `arg` is a namespace string, i.e. an string starting with a letter and containing only letter/digit, dot or underscore, otherwise returns `false` |
 | `isRegex(x: any)` | returns `true` if `arg` is a regular-expression (an instance of `RegExp`). |
 | `isSubClassOf(childClass, parentClass)` | returns `true` if `childClass` is sub-class of `parentClass`, otherwise returns `false`. |
+| `typename(x)` | returns type of `x` as string. |
 | `foreach(x, callback)` or `forEach(x, callback)` | iterates over an array, an object or an iterable list, invokes `callback` on each iteration, passing it current value and other information. At the end, it returns an array containing the result of invokations of the `callback`. |
 | `query(object, path)` | queries over `object` based on the given `path` in string (explained furthur). |
 | `set(object, path, value)` | sets value of the given `path` in the given `object` (explained furthur). |
@@ -572,6 +573,84 @@ class Baz {}
 
 isSubClassOf(Bar, Foo)  // true
 isSubClassOf(Baz, Foo)  // false
+```
+
+## `typename(x)`
+In order to get type name we usually use `typeof` operator. However, it does not return a correct result. For example, for `null` it returns `object`. Or, for arrays it also returns `object`. The `typename` function is a helper function that returns correct type name.
+
+```javascript
+[
+    null,
+    undefined,
+    NaN,
+    23,
+    new Number(23),
+    Number(23),
+    true,
+    new Boolean(false),
+    Boolean(false),
+    "test",
+    String("123"),
+    new String("123"),
+    new Date(),
+    [],
+    new Array(2),
+    {},
+    // Symbol('123'),
+    function() {},
+    () => {},
+    new Function('a', 'return a * 2'),
+    (function *() {yield 1; yield 2;}),
+    (function *() {yield 1; yield 2;})()
+].forEach(x => {
+    const type1 = typeof x;
+    const type2 = typename(x);
+
+    console.log({value: x, 'typeof': type1, 'typename': type2})
+})
+/* output:
+{ value: null, typeof: 'object', typename: 'null' }
+{ value: undefined, typeof: 'undefined', typename: 'undefined' }
+{ value: NaN, typeof: 'number', typename: 'NaN' }
+{ value: 23, typeof: 'number', typename: 'number' }
+{ value: [Number: 23], typeof: 'object', typename: 'number' }
+{ value: 23, typeof: 'number', typename: 'number' }
+{ value: true, typeof: 'boolean', typename: 'boolean' }
+{ value: [Boolean: false], typeof: 'object', typename: 'boolean' }
+{ value: false, typeof: 'boolean', typename: 'boolean' }
+{ value: 'test', typeof: 'string', typename: 'string' }
+{ value: '123', typeof: 'string', typename: 'string' }
+{ value: [String: '123'], typeof: 'object', typename: 'string' }
+{ value: 2026-02-19T10:51:58.424Z, typeof: 'object', typename: 'date' }
+{ value: [], typeof: 'object', typename: 'array' }
+{ value: [ <2 empty items> ], typeof: 'object', typename: 'array' }
+{ value: {}, typeof: 'object', typename: 'object' }
+{
+  value: [Function (anonymous)],
+  typeof: 'function',
+  typename: 'function'
+}
+{
+  value: [Function (anonymous)],
+  typeof: 'function',
+  typename: 'function'
+}
+{
+  value: [Function: anonymous],
+  typeof: 'function',
+  typename: 'function'
+}
+{
+  value: [GeneratorFunction (anonymous)],
+  typeof: 'function',
+  typename: 'function'
+}
+{
+  value: Object [Generator] {},
+  typeof: 'object',
+  typename: 'iterable'
+}
+*/
 ```
 
 ## `forEach(x: any, callback: function): array`

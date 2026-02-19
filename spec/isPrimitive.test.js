@@ -1,7 +1,7 @@
 import * as locust from '../src'
 
 // -------------- isPrimitive -----------------
-describe('locustjs-base test suite: testing isPrimitive', function() {
+describe('@locustjs/base test suite: testing isPrimitive', function() {
   it(`isPrimitive(null)`, function() {
      expect(locust.isPrimitive(null)).toBe(false);
   });
